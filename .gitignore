@@ -1,0 +1,93 @@
+# ========================
+# Dependencies
+# ========================
+node_modules/
+.pnp
+.pnp.js
+
+# ========================
+# Build outputs
+# ========================
+.next/
+out/
+build/
+dist/
+
+# ========================
+# Environment variables (NEVER commit these)
+# ========================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.production
+.env.development
+.env.staging
+
+# ========================
+# Package manager lockfiles (keep one, ignore others)
+# ========================
+# pnpm-lock.yaml is kept — remove this line if you use pnpm
+# yarn.lock
+
+# ========================
+# Testing
+# ========================
+coverage/
+.nyc_output/
+
+# ========================
+# OS generated files
+# ========================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# ========================
+# Editor / IDE files
+# ========================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+.editorconfig
+
+# ========================
+# Logs
+# ========================
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# ========================
+# Vercel / v0 internal
+# ========================
+.vercel/
+__v0_runtime_loader.js
+__v0_devtools.tsx
+__v0_jsx-dev-runtime.ts
+.snowflake/
+.v0-trash/
+
+# ========================
+# TypeScript
+# ========================
+*.tsbuildinfo
+next-env.d.ts
+
+# Common ignores
+node_modules
+.next/
+.DS_Store
+.vercel
