@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  CARTOON BEAR — Animation-Ready SVG
+  ════════════════════════════════════════════════════════
+  viewBox:       0 0 512 512
+  Neck joint:    (256, 220)  ← use as transform-origin for #head
+  Pupil range:   ±6px from center
+  Paw hide:      translate(0, 170)  → set to translate(0, 0) to cover eyes
+  Clip boundary: y = 255 (anything below is clipped for paws)
+
+  GSAP quick-start:
+    // Cover eyes
+    gsap.to("#leftPaw, #rightPaw", { y: 0, duration: 0.5, ease: "back.out(1.4)" });
+    // Uncover
+    gsap.to("#leftPaw, #rightPaw", { y: 170, duration: 0.4, ease: "power2.inOut" });
+    // Eye tracking
+    gsap.to("#leftPupil, #rightPupil", { cx: "+=4", cy: "+=2", duration: 0.3 });
+    // Head tilt
+    gsap.to("#head", { rotation: 3, transformOrigin: "256px 220px", duration: 0.4 });
+  ════════════════════════════════════════════════════════
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- ═══ Gradients ═══════════════════════════════════ -->
+    <!-- Main fur -->
+    <radialGradient id="furGrad" cx="42%" cy="32%" r="68%">
+      <stop offset="0%"   stop-color="#D9A35C"/>
+      <stop offset="50%"  stop-color="#C68642"/>
+      <stop offset="100%" stop-color="#A87030"/>
+    </radialGradient>
+
+    <!-- Muzzle / belly -->
+    <radialGradient id="muzzleGrad" cx="50%" cy="38%" r="62%">
+      <stop offset="0%"   stop-color="#F5E4CC"/>
+      <stop offset="100%" stop-color="#E8CBA0"/>
+    </radialGradient>
+
+    <!-- Inner ear -->
+    <radialGradient id="earInnerGrad" cx="50%" cy="40%" r="55%">
+      <stop offset="0%"   stop-color="#EEAA88"/>
+      <stop offset="100%" stop-color="#D4906A"/>
+    </radialGradient>
+
+    <!-- Nose -->
+    <radialGradient id="noseGrad" cx="36%" cy="28%" r="58%">
+      <stop offset="0%"   stop-color="#5A4030"/>
+      <stop offset="100%" stop-color="#2D1B0E"/>
+    </radialGradient>
+
+    <!-- Paw pad -->
+    <radialGradient id="pawPadGrad" cx="50%" cy="42%" r="56%">
+      <stop offset="0%"   stop-color="#EEB090"/>
+      <stop offset="100%" stop-color="#D08868"/>
+    </radialGradient>
+
+    <!-- Eye white -->
+    <radialGradient id="eyeWhiteGrad" cx="45%" cy="38%" r="60%">
+      <stop offset="0%"   stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#F2F2F2"/>
+    </radialGradient>
+
+    <!-- Shadow -->
+    <radialGradient id="shadowGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%"   stop-color="rgba(0,0,0,0.08)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </radialGradient>
+
+    <!-- ═══ Clip path for paws ══════════════════════════ -->
+    <!-- Paws below y=255 are hidden (behind body area) -->
+    <clipPath id="pawClip">
+      <rect x="0" y="0" width="512" height="255"/>
+    </clipPath>
+  </defs>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       BODY
+       ══════════════════════════════════════════════════════ -->
+  <g id="body">
+    <!-- Shadow under bear -->
+    <ellipse cx="256" cy="468" rx="90" ry="10" fill="url(#shadowGrad)"/>
+
+    <!-- Main body -->
+    <ellipse cx="256" cy="348" rx="108" ry="112" fill="url(#furGrad)"/>
+
+    <!-- Belly -->
+    <ellipse cx="256" cy="344" rx="70" ry="78" fill="url(#muzzleGrad)"/>
+
+    <!-- Belly fur texture lines -->
+    <path d="M232 320 Q236 314 240 320" fill="none" stroke="#D4A870" stroke-width="1" opacity="0.35"/>
+    <path d="M252 314 Q256 308 260 314" fill="none" stroke="#D4A870" stroke-width="1" opacity="0.35"/>
+    <path d="M272 320 Q276 314 280 320" fill="none" stroke="#D4A870" stroke-width="1" opacity="0.35"/>
+  </g>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       HEAD
+       transform-origin: 256px 220px (neck joint)
+       ══════════════════════════════════════════════════════ -->
+  <g id="head">
+
+    <!-- ─── Ears ──────────────────────────────────────── -->
+    <!-- Left ear -->
+    <circle cx="172" cy="62" r="36" fill="url(#furGrad)"/>
+    <circle cx="172" cy="62" r="21" fill="url(#earInnerGrad)"/>
+    <!-- Left ear fur tufts -->
+    <path d="M152 48 Q147 40 154 43" fill="#C68642" stroke="#B07530" stroke-width="0.6"/>
+    <path d="M157 42 Q153 34 160 38" fill="#C68642" stroke="#B07530" stroke-width="0.6"/>
+
+    <!-- Right ear -->
+    <circle cx="340" cy="62" r="36" fill="url(#furGrad)"/>
+    <circle cx="340" cy="62" r="21" fill="url(#earInnerGrad)"/>
+    <!-- Right ear fur tufts -->
+    <path d="M360 48 Q365 40 358 43" fill="#C68642" stroke="#B07530" stroke-width="0.6"/>
+    <path d="M355 42 Q359 34 352 38" fill="#C68642" stroke="#B07530" stroke-width="0.6"/>
+
+    <!-- ─── Head shape ────────────────────────────────── -->
+    <circle cx="256" cy="140" r="96" fill="url(#furGrad)"/>
+
+    <!-- Forehead fur texture -->
+    <path d="M224 98 Q229 92 234 98"  fill="none" stroke="#B87E3C" stroke-width="0.8" opacity="0.3"/>
+    <path d="M250 92 Q255 86 260 92"  fill="none" stroke="#B87E3C" stroke-width="0.8" opacity="0.3"/>
+    <path d="M274 96 Q279 90 284 96"  fill="none" stroke="#B87E3C" stroke-width="0.8" opacity="0.3"/>
+
+    <!-- Cheek fur puffs -->
+    <ellipse cx="162" cy="148" rx="12" ry="8" fill="#C68642" opacity="0.45"/>
+    <ellipse cx="350" cy="148" rx="12" ry="8" fill="#C68642" opacity="0.45"/>
+
+    <!-- ─── Muzzle ────────────────────────────────────── -->
+    <ellipse cx="256" cy="175" rx="54" ry="40" fill="url(#muzzleGrad)"/>
+
+    <!-- ─── Blush ─────────────────────────────────────── -->
+    <circle cx="186" cy="168" r="15" fill="rgba(255,140,140,0.22)"/>
+    <circle cx="326" cy="168" r="15" fill="rgba(255,140,140,0.22)"/>
+
+    <!-- ─── Eyebrows ──────────────────────────────────── -->
+    <path id="leftBrow"  d="M196 108 Q210 100 228 108" fill="none" stroke="#8B5E34" stroke-width="2.5" stroke-linecap="round"/>
+    <path id="rightBrow" d="M284 108 Q302 100 316 108" fill="none" stroke="#8B5E34" stroke-width="2.5" stroke-linecap="round"/>
+
+    <!-- ═══════════════════════════════════════════════════
+         LEFT EYE
+         Eye white center: (218, 128)
+         Pupil default:    (218, 128)  movable ±6px
+         ═══════════════════════════════════════════════════ -->
+    <g id="leftEye">
+      <!-- Eye shadow -->
+      <ellipse cx="218" cy="130" rx="19" ry="23" fill="rgba(0,0,0,0.04)"/>
+      <!-- Eye white -->
+      <ellipse cx="218" cy="128" rx="17" ry="21" fill="url(#eyeWhiteGrad)" stroke="#C8A882" stroke-width="0.6"/>
+      <!-- Pupil — animate cx/cy within ±6px of (218, 128) -->
+      <circle id="leftPupil" cx="218" cy="128" r="9" fill="#2D1B0E"/>
+      <!-- Inner iris -->
+      <circle cx="218" cy="128" r="5.5" fill="#1A0F06"/>
+      <!-- Main shine -->
+      <circle cx="214" cy="123" r="3.5" fill="white" opacity="0.92"/>
+      <!-- Secondary shine -->
+      <circle cx="222" cy="133" r="1.8" fill="white" opacity="0.45"/>
+    </g>
+
+    <!-- ═══════════════════════════════════════════════════
+         RIGHT EYE
+         Eye white center: (294, 128)
+         Pupil default:    (294, 128)  movable ±6px
+         ═══════════════════════════════════════════════════ -->
+    <g id="rightEye">
+      <ellipse cx="294" cy="130" rx="19" ry="23" fill="rgba(0,0,0,0.04)"/>
+      <ellipse cx="294" cy="128" rx="17" ry="21" fill="url(#eyeWhiteGrad)" stroke="#C8A882" stroke-width="0.6"/>
+      <circle id="rightPupil" cx="294" cy="128" r="9" fill="#2D1B0E"/>
+      <circle cx="294" cy="128" r="5.5" fill="#1A0F06"/>
+      <circle cx="290" cy="123" r="3.5" fill="white" opacity="0.92"/>
+      <circle cx="298" cy="133" r="1.8" fill="white" opacity="0.45"/>
+    </g>
+
+    <!-- ─── Nose ──────────────────────────────────────── -->
+    <ellipse cx="256" cy="164" rx="12" ry="9" fill="url(#noseGrad)"/>
+    <!-- Nose highlight -->
+    <ellipse cx="253" cy="161" rx="4" ry="2.5" fill="white" opacity="0.2"/>
+    <!-- Nostrils -->
+    <circle cx="252" cy="167" r="1.5" fill="#1A0F06" opacity="0.3"/>
+    <circle cx="260" cy="167" r="1.5" fill="#1A0F06" opacity="0.3"/>
+
+    <!-- ─── Mouth ─────────────────────────────────────── -->
+    <!-- Normal smile (visible in idle state) -->
+    <path id="mouthSmile"
+          d="M242 178 Q248 186 256 182 Q264 186 270 178"
+          fill="none" stroke="#2D1B0E" stroke-width="2.2" stroke-linecap="round"/>
+
+    <!-- Shy/nervous mouth (hidden — show when covering eyes) -->
+    <path id="mouthShy"
+          d="M238 180 Q244 177 250 180 Q256 183 262 180 Q268 177 274 180"
+          fill="none" stroke="#2D1B0E" stroke-width="2" stroke-linecap="round"
+          opacity="0"/>
+
+    <!-- ─── Whisker dots ──────────────────────────────── -->
+    <circle cx="192" cy="162" r="1.2" fill="#8B5E34" opacity="0.3"/>
+    <circle cx="188" cy="156" r="1.2" fill="#8B5E34" opacity="0.3"/>
+    <circle cx="190" cy="170" r="1.2" fill="#8B5E34" opacity="0.3"/>
+    <circle cx="320" cy="162" r="1.2" fill="#8B5E34" opacity="0.3"/>
+    <circle cx="324" cy="156" r="1.2" fill="#8B5E34" opacity="0.3"/>
+    <circle cx="322" cy="170" r="1.2" fill="#8B5E34" opacity="0.3"/>
+
+  </g><!-- /head -->
+
+
+  <!-- ══════════════════════════════════════════════════════
+       PAWS
+       Drawn at EYE-COVER position, translated down 170px to hide.
+       Wrapped in clipPath so they disappear behind the body.
+
+       To cover eyes:   set transform to translate(0, 0)
+       To hide (idle):  set transform to translate(0, 170)
+       ══════════════════════════════════════════════════════ -->
+  <g clip-path="url(#pawClip)">
+
+    <!-- ═══ LEFT PAW ═══════════════════════════════════ -->
+    <g id="leftPaw" transform="translate(0, 170)">
+      <!-- Paw base (covers left eye area) -->
+      <rect x="188" y="106" width="60" height="50" rx="21" ry="21"
+            fill="url(#furGrad)" stroke="#A86E2D" stroke-width="0.9"/>
+      <!-- Main pad -->
+      <ellipse cx="218" cy="140" rx="15" ry="9" fill="url(#pawPadGrad)"/>
+      <!-- Pad detail -->
+      <ellipse cx="218" cy="140" rx="8" ry="4.5" fill="none" stroke="#C07050" stroke-width="0.6" opacity="0.4"/>
+      <!-- Toe pads -->
+      <circle cx="202" cy="116" r="6.5" fill="url(#pawPadGrad)"/>
+      <circle cx="218" cy="112" r="6.5" fill="url(#pawPadGrad)"/>
+      <circle cx="234" cy="116" r="6.5" fill="url(#pawPadGrad)"/>
+    </g>
+
+    <!-- ═══ RIGHT PAW ══════════════════════════════════ -->
+    <g id="rightPaw" transform="translate(0, 170)">
+      <rect x="264" y="106" width="60" height="50" rx="21" ry="21"
+            fill="url(#furGrad)" stroke="#A86E2D" stroke-width="0.9"/>
+      <ellipse cx="294" cy="140" rx="15" ry="9" fill="url(#pawPadGrad)"/>
+      <ellipse cx="294" cy="140" rx="8" ry="4.5" fill="none" stroke="#C07050" stroke-width="0.6" opacity="0.4"/>
+      <circle cx="278" cy="116" r="6.5" fill="url(#pawPadGrad)"/>
+      <circle cx="294" cy="112" r="6.5" fill="url(#pawPadGrad)"/>
+      <circle cx="310" cy="116" r="6.5" fill="url(#pawPadGrad)"/>
+    </g>
+
+  </g><!-- /pawClip wrapper -->
+
+</svg>
