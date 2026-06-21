@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef, useTransition } from "react"
 import Link from "next/link"
+import { Slider } from "@/components/ui/slider"
 import {
   Wallet,
   CheckCircle,
@@ -41,7 +42,15 @@ import {
   Info,
   CheckSquare,
   Square,
-  FileText
+  FileText,
+  MapPin,
+  Tag,
+  ChevronDown,
+  ArrowLeft,
+  ArrowRight,
+  ClipboardCheck,
+  Target,
+  GraduationCap
 } from "lucide-react"
 
 // Types & Interfaces
@@ -306,12 +315,15 @@ export default function RescomDashboard() {
 
   // Advanced Filter Side Panel States
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
+  const [selectedAges, setSelectedAges] = useState<string[]>([])
+  const [selectedGenders, setSelectedGenders] = useState<string[]>([])
+  const [selectedLocation, setSelectedLocation] = useState<string>("")
+  const [selectedOccupations, setSelectedOccupations] = useState<string[]>([])
   const [selectedMajors, setSelectedMajors] = useState<string[]>([])
-  const [selectedUniversities, setSelectedUniversities] = useState<string[]>([])
-  const [ageRange, setAgeRange] = useState<[number, number]>([16, 30])
+  const [incomeRange, setIncomeRange] = useState<[number, number]>([3, 10])
+  const [selectedHobbies, setSelectedHobbies] = useState<string[]>([])
   const [bountyRange, setBountyRange] = useState<number>(5)
-  const [selectedDuration, setSelectedDuration] = useState<string>("")
-  const [selectedDeadline, setSelectedDeadline] = useState<string>("")
+  const [selectedDuration, setSelectedDuration] = useState<string[]>([])
 
   // Active Filter Count for Badge
   const [activeFilterCount, setActiveFilterCount] = useState(0)
@@ -341,6 +353,7 @@ export default function RescomDashboard() {
   const [newSurveyBounty, setNewSurveyBounty] = useState(25)
   const [newSurveyTarget, setNewSurveyTarget] = useState(50)
   const [newSurveyTopic, setNewSurveyTopic] = useState<Survey["topic"]>("shopping")
+  const [newSurveyStep, setNewSurveyStep] = useState(1)
 
   // Floating points reward animation helpers
   const [floatingReward, setFloatingReward] = useState<{ amount: number; x: number; y: number } | null>(null)
@@ -427,14 +440,17 @@ export default function RescomDashboard() {
   // Recalculate Active Filter Count
   useEffect(() => {
     let count = 0
+    if (selectedAges.length > 0) count++
+    if (selectedGenders.length > 0) count++
+    if (selectedLocation !== "") count++
+    if (selectedOccupations.length > 0) count++
     if (selectedMajors.length > 0) count++
-    if (selectedUniversities.length > 0) count++
-    if (ageRange[0] !== 16 || ageRange[1] !== 30) count++
+    if (incomeRange[0] !== 0 || incomeRange[1] !== 20) count++
+    if (selectedHobbies.length > 0) count++
     if (bountyRange > 5) count++
-    if (selectedDuration !== "") count++
-    if (selectedDeadline !== "") count++
+    if (selectedDuration.length > 0) count++
     setActiveFilterCount(count)
-  }, [selectedMajors, selectedUniversities, ageRange, bountyRange, selectedDuration, selectedDeadline])
+  }, [selectedAges, selectedGenders, selectedLocation, selectedOccupations, selectedMajors, incomeRange, selectedHobbies, bountyRange, selectedDuration])
 
   // Vietnamese Diacritic Insensitive helper
   const removeDiacritics = (str: string) => {
@@ -507,30 +523,21 @@ export default function RescomDashboard() {
     // 4. Advanced Filter Side Panel Matching
     if (selectedMajors.length > 0 && survey.majorTarget && survey.majorTarget !== "Tất cả") {
       const matchesMajor = selectedMajors.some((m) => survey.majorTarget?.includes(m))
-      if (!matchesMajor) return false
-    }
-
-    if (selectedUniversities.length > 0 && survey.universityTarget && survey.universityTarget !== "Tất cả") {
-      const matchesUni = selectedUniversities.some((u) => survey.universityTarget?.includes(u))
-      if (!matchesUni) return false
+      if (!matchesMajor && !selectedMajors.includes("Khác")) return false
     }
 
     if (survey.pointBounty < bountyRange) return false
 
     // Time ranges filter
-    if (selectedDuration) {
-      if (selectedDuration === "<5" && survey.estimatedTime >= 5) return false
-      if (selectedDuration === "5-10" && (survey.estimatedTime < 5 || survey.estimatedTime > 10)) return false
-      if (selectedDuration === "10-20" && (survey.estimatedTime < 10 || survey.estimatedTime > 20)) return false
-      if (selectedDuration === ">20" && survey.estimatedTime <= 20) return false
-    }
-
-    // Deadline ranges filter
-    if (selectedDeadline) {
-      if (selectedDeadline === "1" && survey.deadlineDays > 1) return false
-      if (selectedDeadline === "3" && survey.deadlineDays > 3) return false
-      if (selectedDeadline === "7" && survey.deadlineDays > 7) return false
-      if (selectedDeadline === "30" && survey.deadlineDays > 30) return false
+    if (selectedDuration.length > 0) {
+      const time = survey.estimatedTime
+      let timeMatch = false
+      if (selectedDuration.includes("Dưới 5 phút") && time < 5) timeMatch = true
+      if (selectedDuration.includes("Từ 5 - 10 phút") && time >= 5 && time <= 10) timeMatch = true
+      if (selectedDuration.includes("Từ 10 - 15 phút") && time >= 10 && time <= 15) timeMatch = true
+      if (selectedDuration.includes("Trên 15 phút") && time > 15) timeMatch = true
+      
+      if (!timeMatch) return false
     }
 
     return true
@@ -698,12 +705,15 @@ export default function RescomDashboard() {
   const handleClearFilters = () => {
     setActiveFilter("Tất cả")
     setSearchQuery("")
+    setSelectedAges([])
+    setSelectedGenders([])
+    setSelectedLocation("")
+    setSelectedOccupations([])
     setSelectedMajors([])
-    setSelectedUniversities([])
-    setAgeRange([16, 30])
+    setIncomeRange([3, 10])
+    setSelectedHobbies([])
     setBountyRange(5)
-    setSelectedDuration("")
-    setSelectedDeadline("")
+    setSelectedDuration([])
   }
 
   // Mark all notifications as read
@@ -1658,9 +1668,9 @@ export default function RescomDashboard() {
         </div>
       </div>
 
-      {/* 9. ADVANCED FILTER PANEL (Right Slide-in Drawer) */}
+      {/* 9. ADVANCED FILTER PANEL (Centered Modal) */}
       {showAdvancedFilters && (
-        <div className="fixed inset-0 z-50 overflow-hidden" role="dialog" aria-modal="true" aria-label="Bộ lọc khảo sát nâng cao">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-label="Bộ lọc khảo sát nâng cao">
 
           {/* Backdrop */}
           <div
@@ -1668,32 +1678,144 @@ export default function RescomDashboard() {
             className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
           ></div>
 
-          <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col h-full animate-slide-left">
+          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[95vh] animate-scale-in">
 
-              {/* Header */}
-              <div className="px-6 py-5 bg-[#FEFCF7] border-b border-[#E5E7EB] flex items-center justify-between">
-                <div>
-                  <h3 className="text-lg font-bold text-[#1A1A1A]">Bộ lọc nâng cao</h3>
-                  <p className="text-xs text-[#6B7280]">Nhắm đúng mục tiêu khảo sát lý tưởng</p>
+            {/* Header */}
+            <div className="px-6 py-5 border-b border-[#E5E7EB] flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-[#1A1A1A]">Bộ lọc nâng cao</h3>
+                <p className="text-sm text-[#6B7280]">Tìm đúng đối tượng khảo sát</p>
+              </div>
+              <button
+                onClick={() => setShowAdvancedFilters(false)}
+                className="p-1 rounded-full text-[#6B7280] hover:bg-[#FAF8F1] transition-colors"
+                aria-label="Đóng bảng bộ lọc"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Scrollable Filters Content */}
+            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+
+              {/* 1. ĐỘ TUỔI */}
+              <div className="space-y-3">
+                <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Độ tuổi</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {["Dưới 18 tuổi", "18 - 22 tuổi", "23 - 25 tuổi", "Trên 25 tuổi"].map((age) => {
+                    const selected = selectedAges.includes(age)
+                    return (
+                      <button
+                        key={age}
+                        onClick={() => {
+                          if (selected) {
+                            setSelectedAges(selectedAges.filter((a) => a !== age))
+                          } else {
+                            setSelectedAges([...selectedAges, age])
+                          }
+                        }}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
+                          ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
+                          : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                          }`}
+                      >
+                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
+                          {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                        </div>
+                        <span className="whitespace-nowrap">{age}</span>
+                      </button>
+                    )
+                  })}
                 </div>
-                <button
-                  onClick={() => setShowAdvancedFilters(false)}
-                  className="p-1 rounded-full text-[#6B7280] hover:bg-[#FAF8F1] transition-colors"
-                  aria-label="Đóng bảng bộ lọc"
-                >
-                  <X className="w-6 h-6" />
-                </button>
               </div>
 
-              {/* Scrollable Filters Content */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {/* GIỚI TÍNH */}
+                <div className="space-y-3">
+                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Giới tính</span>
+                  <div className="flex flex-wrap gap-3">
+                    {["Nam", "Nữ", "Khác"].map((gender) => {
+                      const selected = selectedGenders.includes(gender)
+                      return (
+                        <button
+                          key={gender}
+                          onClick={() => {
+                            if (selected) {
+                              setSelectedGenders(selectedGenders.filter((g) => g !== gender))
+                            } else {
+                              setSelectedGenders([...selectedGenders, gender])
+                            }
+                          }}
+                          className={`flex flex-1 items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
+                            ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
+                            : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                            }`}
+                        >
+                          <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
+                            {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                          </div>
+                          <span>{gender}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
 
-                {/* 1. Ngành Học targeted */}
-                <div className="space-y-2.5">
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Ngành học mục tiêu</span>
-                  <div className="flex flex-wrap gap-2">
-                    {["CNTT", "Marketing", "Kinh tế", "Y tế", "Tâm lý học", "Xã hội học"].map((major) => {
+                {/* KHU VỰC SINH SỐNG */}
+                <div className="space-y-3">
+                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Khu vực sinh sống</span>
+                  <div className="relative">
+                    <select
+                      value={selectedLocation}
+                      onChange={(e) => setSelectedLocation(e.target.value)}
+                      className="w-full h-[46px] px-4 appearance-none border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1A1A1A] focus:outline-none focus:border-[#3db87a] focus:ring-1 focus:ring-[#3db87a] bg-white transition-all"
+                    >
+                      <option value="">Chọn tỉnh / thành phố</option>
+                      <option value="Hà Nội">Hà Nội</option>
+                      <option value="TP.HCM">TP.HCM</option>
+                      <option value="Đà Nẵng">Đà Nẵng</option>
+                      <option value="Khác">Khác</option>
+                    </select>
+                    <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280] rotate-90 pointer-events-none" />
+                  </div>
+                </div>
+
+                {/* NGHỀ NGHIỆP */}
+                <div className="space-y-3">
+                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Nghề nghiệp</span>
+                  <div className="flex flex-wrap gap-3">
+                    {["Học sinh / Sinh viên", "Nhân viên văn phòng", "Freelancer", "Chủ doanh nghiệp", "Khác"].map((occ) => {
+                      const selected = selectedOccupations.includes(occ)
+                      return (
+                        <button
+                          key={occ}
+                          onClick={() => {
+                            if (selected) {
+                              setSelectedOccupations(selectedOccupations.filter((o) => o !== occ))
+                            } else {
+                              setSelectedOccupations([...selectedOccupations, occ])
+                            }
+                          }}
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
+                            ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
+                            : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                            }`}
+                        >
+                          <div className={`w-4 h-4 flex-shrink-0 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
+                            {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                          </div>
+                          <span>{occ}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </div>
+
+                {/* KHỐI NGÀNH */}
+                <div className="space-y-3">
+                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Khối ngành</span>
+                  <div className="flex flex-wrap gap-3">
+                    {["Kinh tế - Marketing", "Truyền thông - Báo chí", "CNTT - Kỹ thuật phần mềm", "Ngôn ngữ - Du lịch", "Khác"].map((major) => {
                       const selected = selectedMajors.includes(major)
                       return (
                         <button
@@ -1705,160 +1827,151 @@ export default function RescomDashboard() {
                               setSelectedMajors([...selectedMajors, major])
                             }
                           }}
-                          className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${selected
-                            ? "bg-[#3db87a] text-white"
-                            : "bg-[#E8F3EC] text-[#3db87a] hover:bg-[#C7D2C9]/60"
+                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
+                            ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
+                            : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
                             }`}
                         >
-                          {major}
+                          <div className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
+                            {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                          </div>
+                          <span>{major}</span>
                         </button>
                       )
                     })}
                   </div>
                 </div>
-
-                {/* 2. Trường targeted */}
-                <div className="space-y-2.5">
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Trường học mục tiêu</span>
-                  <div className="flex flex-wrap gap-2">
-                    {["ĐH CNTT", "ĐH Bách Khoa", "ĐH Ngoại thương", "ĐH KHXH&NV"].map((uni) => {
-                      const selected = selectedUniversities.includes(uni)
-                      return (
-                        <button
-                          key={uni}
-                          onClick={() => {
-                            if (selected) {
-                              setSelectedUniversities(selectedUniversities.filter((u) => u !== uni))
-                            } else {
-                              setSelectedUniversities([...selectedUniversities, uni])
-                            }
-                          }}
-                          className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${selected
-                            ? "bg-[#3db87a] text-white"
-                            : "bg-[#E8F3EC] text-[#3db87a] hover:bg-[#C7D2C9]/60"
-                            }`}
-                        >
-                          {uni}
-                        </button>
-                      )
-                    })}
-                  </div>
-                </div>
-
-                {/* 3. Độ tuổi Range Slider */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Độ tuổi giới hạn</span>
-                    <span className="text-xs font-bold text-[#3db87a]">{ageRange[0]} - {ageRange[1]} tuổi</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="16"
-                    max="30"
-                    value={ageRange[1]}
-                    onChange={(e) => setAgeRange([16, parseInt(e.target.value)])}
-                    className="w-full accent-[#3db87a] bg-gray-200 h-2 rounded-lg cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-[#6B7280]">
-                    <span>16 tuổi</span>
-                    <span>30 tuổi</span>
-                  </div>
-                </div>
-
-                {/* 4. Mức thưởng minimum */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Mức thưởng tối thiểu</span>
-                    <span className="text-xs font-bold text-[#3db87a]">{bountyRange}đ</span>
-                  </div>
-                  <input
-                    type="range"
-                    min="5"
-                    max="50"
-                    step="5"
-                    value={bountyRange}
-                    onChange={(e) => setBountyRange(parseInt(e.target.value))}
-                    className="w-full accent-[#3db87a] bg-gray-200 h-2 rounded-lg cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] text-[#6B7280]">
-                    <span>5đ</span>
-                    <span>50đ</span>
-                  </div>
-                </div>
-
-                {/* 5. Thời gian làm */}
-                <div className="space-y-2.5">
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Thời gian hoàn thành</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: "<5", label: "Dưới 5 phút" },
-                      { id: "5-10", label: "Từ 5 - 10 phút" },
-                      { id: "10-20", label: "Từ 10 - 20 phút" },
-                      { id: ">20", label: "Trên 20 phút" }
-                    ].map((time) => (
-                      <button
-                        key={time.id}
-                        onClick={() => setSelectedDuration(selectedDuration === time.id ? "" : time.id)}
-                        className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all ${selectedDuration === time.id
-                          ? "bg-[#3db87a] text-white border-[#3db87a]"
-                          : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
-                          }`}
-                      >
-                        {time.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 6. Deadline */}
-                <div className="space-y-2.5">
-                  <span className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">Hạn chót còn lại</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {[
-                      { id: "1", label: "Trong 24 giờ" },
-                      { id: "3", label: "Trong 3 ngày" },
-                      { id: "7", label: "Trong 1 tuần" },
-                      { id: "30", label: "Trong 1 tháng" }
-                    ].map((deadline) => (
-                      <button
-                        key={deadline.id}
-                        onClick={() => setSelectedDeadline(selectedDeadline === deadline.id ? "" : deadline.id)}
-                        className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all ${selectedDeadline === deadline.id
-                          ? "bg-[#3db87a] text-white border-[#3db87a]"
-                          : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
-                          }`}
-                      >
-                        {deadline.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
               </div>
 
-              {/* Footer */}
-              <div className="p-6 bg-[#FEFCF7] border-t border-[#E5E7EB] flex items-center justify-between gap-4">
-                <button
-                  onClick={() => {
-                    handleClearFilters()
-                    showToast("Đã xóa mọi thiết lập lọc", "info")
-                  }}
-                  className="text-xs font-bold text-[#DC2626] hover:underline"
-                >
-                  Xóa bộ lọc
-                </button>
-                <button
-                  onClick={() => {
-                    setShowAdvancedFilters(false)
-                    showToast("Áp dụng bộ lọc thành công!", "success")
-                  }}
-                  className="flex-1 h-11 bg-[#3db87a] hover:bg-[#13422C] text-white rounded-full text-xs font-bold shadow-md shadow-green-950/20 active:scale-95 transition-all"
-                >
-                  Áp dụng
-                </button>
+              {/* THU NHẬP HÀNG THÁNG */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Thu nhập hàng tháng</span>
+                  <span className="text-sm font-bold text-[#3db87a]">{incomeRange[0]} - {incomeRange[1]} triệu VNĐ</span>
+                </div>
+                <div className="px-2">
+                  <Slider
+                    min={0}
+                    max={20}
+                    step={1}
+                    value={incomeRange}
+                    onValueChange={(val) => setIncomeRange(val as [number, number])}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-[#6B7280] font-medium">
+                  <span className="w-1/4 text-left">Dưới 3 triệu</span>
+                  <span className="w-1/4 text-center">3 - 5 triệu</span>
+                  <span className="w-1/4 text-center">5 - 10 triệu</span>
+                  <span className="w-1/4 text-right">Trên 10 triệu</span>
+                </div>
+              </div>
+
+              {/* SỞ THÍCH */}
+              <div className="space-y-3">
+                <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Sở thích</span>
+                <div className="flex flex-wrap gap-3">
+                  {["Công nghệ & Game", "Thời trang & Làm đẹp", "Du lịch & Trải nghiệm", "Thể thao & Sức khỏe", "Ẩm thực (F&B)", "Nghệ thuật & Sách", "Hoạt động xã hội"].map((hobby) => {
+                    const selected = selectedHobbies.includes(hobby)
+                    return (
+                      <button
+                        key={hobby}
+                        onClick={() => {
+                          if (selected) {
+                            setSelectedHobbies(selectedHobbies.filter((h) => h !== hobby))
+                          } else {
+                            setSelectedHobbies([...selectedHobbies, hobby])
+                          }
+                        }}
+                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
+                          ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
+                          : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                          }`}
+                      >
+                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
+                          {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                        </div>
+                        <span>{hobby}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* MỨC THƯỞNG TỐI THIỂU */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Mức thưởng tối thiểu</span>
+                  <span className="text-sm font-bold text-[#3db87a]">{bountyRange}đ</span>
+                </div>
+                <div className="px-2">
+                  <Slider
+                    min={5}
+                    max={50}
+                    step={5}
+                    value={[bountyRange]}
+                    onValueChange={(val) => setBountyRange(val[0])}
+                    className="w-full"
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-[#6B7280] font-medium">
+                  <span>5đ</span>
+                  <span>50đ</span>
+                </div>
+              </div>
+
+              {/* THỜI GIAN HOÀN THÀNH */}
+              <div className="space-y-3">
+                <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Thời gian hoàn thành</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {["Dưới 5 phút", "Từ 5 - 10 phút", "Từ 10 - 15 phút", "Trên 15 phút"].map((time) => {
+                    const selected = selectedDuration.includes(time)
+                    return (
+                      <button
+                        key={time}
+                        onClick={() => {
+                          if (selected) {
+                            setSelectedDuration(selectedDuration.filter((t) => t !== time))
+                          } else {
+                            setSelectedDuration([...selectedDuration, time])
+                          }
+                        }}
+                        className={`px-3 py-2.5 rounded-xl text-sm font-semibold text-center border transition-all ${selected
+                          ? "text-[#3db87a] border-[#3db87a] bg-[#E8F3EC]"
+                          : "bg-white text-[#3db87a] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                          }`}
+                      >
+                        {time}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
 
             </div>
+
+            {/* Footer */}
+            <div className="p-6 border-t border-[#E5E7EB] flex items-center justify-between gap-4">
+              <button
+                onClick={() => {
+                  handleClearFilters()
+                  showToast("Đã xóa mọi thiết lập lọc", "info")
+                }}
+                className="text-sm font-bold text-[#DC2626] hover:underline px-2"
+              >
+                Xóa bộ lọc
+              </button>
+              <button
+                onClick={() => {
+                  setShowAdvancedFilters(false)
+                  showToast("Áp dụng bộ lọc thành công!", "success")
+                }}
+                className="w-48 md:w-64 h-12 bg-[#3db87a] hover:bg-[#13422C] text-white rounded-full text-sm font-bold shadow-md shadow-green-950/20 active:scale-95 transition-all"
+              >
+                Áp dụng
+              </button>
+            </div>
+
           </div>
         </div>
       )}
@@ -1988,168 +2101,304 @@ export default function RescomDashboard() {
         </div>
       )}
 
-      {/* FAB MODAL - CREATE NEW SURVEY (PUB WIZARD MOCK) */}
+      {/* FAB MODAL - CREATE NEW SURVEY */}
       {showFABModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo khảo sát mới">
-          <div className="bg-white rounded-3xl w-full max-w-xl border border-[#E5E7EB] shadow-2xl p-6 md:p-8 animate-scale-in relative space-y-6 max-h-[90vh] overflow-y-auto">
-
-            {/* Top Close */}
-            <button
-              onClick={() => setShowFABModal(false)}
-              className="absolute top-5 right-5 p-1 rounded-full text-[#6B7280] hover:bg-[#FAF8F1]"
-              aria-label="Đóng hộp thoại"
-            >
-              <X className="w-6 h-6" />
-            </button>
-
-            {/* Title */}
-            <div className="space-y-1.5 border-b border-[#E5E7EB] pb-4">
-              <h3 className="text-xl font-bold text-[#3db87a] flex items-center gap-2">
-                <PlusCircle className="w-6 h-6" />
-                <span>Đăng khảo sát mới</span>
-              </h3>
-              <p className="text-xs text-[#6B7280]">
-                Phân phối khảo sát của bạn tới sinh viên trường phù hợp. Điểm sẽ ký quỹ an toàn.
-              </p>
+          <div className="bg-white rounded-2xl w-full max-w-[850px] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
+            
+            {/* Header */}
+            <div className="px-8 pt-8 pb-6 border-b border-[#f0f0f0] flex justify-between items-start">
+              <div className="flex gap-4">
+                <div className="w-8 h-8 rounded-full border border-[#2e7d32] flex items-center justify-center text-[#2e7d32] shrink-0 mt-0.5">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h2 className="text-[22px] font-bold text-[#1a1a1a]">Đăng khảo sát mới</h2>
+                  <p className="text-sm text-[#666] mt-1">Phân phối khảo sát của bạn tới sinh viên phù hợp. Điểm sẽ ký quỹ an toàn.</p>
+                </div>
+              </div>
+              <button onClick={() => { setShowFABModal(false); setNewSurveyStep(1); }} className="p-2 text-[#666] hover:bg-[#f5f5f5] rounded-lg transition-colors">
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleCreateSurvey} className="space-y-4">
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">
-                  Tiêu đề khảo sát <strong className="text-[#DC2626]">*</strong>
-                </label>
-                <input
-                  type="text"
-                  value={newSurveyTitle}
-                  onChange={(e) => setNewSurveyTitle(e.target.value)}
-                  placeholder="Ví dụ: Đánh giá dịch vụ Grab tại TP.HCM..."
-                  className="w-full h-11 px-4 text-sm border border-[#E5E7EB] rounded-xl focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 outline-none transition-all font-medium"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">
-                  Đường dẫn Google Form <strong className="text-[#DC2626]">*</strong>
-                </label>
-                <input
-                  type="url"
-                  value={newSurveyUrl}
-                  onChange={(e) => setNewSurveyUrl(e.target.value)}
-                  placeholder="https://docs.google.com/forms/d/..."
-                  className="w-full h-11 px-4 text-sm border border-[#E5E7EB] rounded-xl focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 outline-none transition-all font-medium"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">
-                    Số phản hồi mong muốn
-                  </label>
-                  <input
-                    type="number"
-                    min="10"
-                    max="500"
-                    value={newSurveyTarget}
-                    onChange={(e) => setNewSurveyTarget(Math.max(1, parseInt(e.target.value) || 0))}
-                    className="w-full h-11 px-4 text-sm border border-[#E5E7EB] rounded-xl focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 outline-none transition-all font-bold"
-                  />
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-y-auto px-8 py-8">
+              
+              {/* Progress Steps */}
+              <div className="flex items-center justify-between mb-10 max-w-[650px] mx-auto">
+                {/* Step 1 */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep > 1 ? 'bg-[#1b8045] text-white' : newSurveyStep === 1 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#666]'}`}>
+                    {newSurveyStep > 1 ? <Check className="w-4 h-4" /> : "1"}
+                  </div>
+                  <span className={`text-[15px] whitespace-nowrap ${newSurveyStep >= 1 ? 'text-[#1b8045] font-bold' : 'text-[#666] font-medium'}`}>Thông tin khảo sát</span>
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">
-                    Thưởng mỗi lượt (đ)
-                  </label>
-                  <input
-                    type="number"
-                    min="5"
-                    max="100"
-                    value={newSurveyBounty}
-                    onChange={(e) => setNewSurveyBounty(Math.max(1, parseInt(e.target.value) || 0))}
-                    className="w-full h-11 px-4 text-sm border border-[#E5E7EB] rounded-xl focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 outline-none transition-all font-bold"
-                  />
+                <div className={`flex-1 h-[2px] mx-4 ${newSurveyStep >= 2 ? 'bg-[#1b8045] opacity-40' : 'bg-[#e0e0e0]'}`} />
+                
+                {/* Step 2 */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep > 2 ? 'bg-[#1b8045] text-white' : newSurveyStep === 2 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#999]'}`}>
+                    {newSurveyStep > 2 ? <Check className="w-4 h-4" /> : "2"}
+                  </div>
+                  <span className={`text-[15px] whitespace-nowrap ${newSurveyStep >= 2 ? 'text-[#1b8045] font-bold' : 'text-[#999] font-medium'}`}>Cấu hình phân phối</span>
+                </div>
+                <div className={`flex-1 h-[2px] mx-4 ${newSurveyStep >= 3 ? 'bg-[#1b8045] opacity-40' : 'bg-[#e0e0e0]'}`} />
+                
+                {/* Step 3 */}
+                <div className="flex items-center gap-3">
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep === 3 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#999]'}`}>
+                    3
+                  </div>
+                  <span className={`text-[15px] whitespace-nowrap ${newSurveyStep === 3 ? 'text-[#1b8045] font-bold' : 'text-[#999] font-medium'}`}>Đối tượng khảo sát</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">
-                    Mã xác nhận hoàn thành <strong className="text-[#DC2626]">*</strong>
-                  </label>
-                  <input
-                    type="text"
-                    value={newSurveyCode}
-                    onChange={(e) => setNewSurveyCode(e.target.value)}
-                    placeholder="VD: HOANTHANH99"
-                    className="w-full h-11 px-4 text-sm border border-[#E5E7EB] rounded-xl focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 outline-none transition-all font-mono font-bold uppercase tracking-wider text-center"
-                    required
-                  />
+              {/* Form Section */}
+              {newSurveyStep === 1 && (
+                <div className="space-y-6">
+                  <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
+                    <FileText className="w-5 h-5" />
+                    THÔNG TIN KHẢO SÁT (NỘI DUNG VÀ LIÊN KẾT)
+                  </h3>
+                  <div className="space-y-5 max-w-[650px]">
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">Tiêu đề khảo sát <span className="text-red-500">*</span></label>
+                      <input type="text" value={newSurveyTitle} onChange={(e) => setNewSurveyTitle(e.target.value)} placeholder="Ví dụ: Đánh giá dịch vụ Grab tại TP.HCM..." className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">Đường dẫn Google Form <span className="text-red-500">*</span></label>
+                      <input type="url" value={newSurveyUrl} onChange={(e) => setNewSurveyUrl(e.target.value)} placeholder="https://docs.google.com/forms/d/..." className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">Mã xác nhận hoàn thành <span className="text-red-500">*</span></label>
+                        <input type="text" value={newSurveyCode} onChange={(e) => setNewSurveyCode(e.target.value)} placeholder="VD: HOANTHANH99" className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all font-mono uppercase" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">Chủ đề minh họa</label>
+                        <div className="relative">
+                          <select value={newSurveyTopic} onChange={(e) => setNewSurveyTopic(e.target.value as any)} className="w-full h-[48px] pl-4 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                            <option value="shopping">Thời trang & Mua sắm</option>
+                            <option value="ai">Trí tuệ nhân tạo (AI)</option>
+                            <option value="health">Sức khỏe tâm lý</option>
+                            <option value="finance">Tài chính & Ví điện tử</option>
+                            <option value="food">Giao hàng ẩm thực</option>
+                            <option value="english">Tiếng Anh & IELTS</option>
+                            <option value="gaming">Trải nghiệm chơi game</option>
+                            <option value="library">Dịch vụ Thư viện</option>
+                            <option value="social">Mạng xã hội</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280]">
-                    Chủ đề minh họa
-                  </label>
-                  <select
-                    value={newSurveyTopic}
-                    onChange={(e) => setNewSurveyTopic(e.target.value as any)}
-                    className="w-full h-11 px-3 text-sm border border-[#E5E7EB] rounded-xl focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 outline-none transition-all font-medium bg-white"
+              )}
+
+              {newSurveyStep === 2 && (
+                <div className="space-y-6">
+                  <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
+                    <Settings className="w-5 h-5" />
+                    CẤU HÌNH PHÂN PHỐI (SỐ LƯỢNG VÀ THƯỞNG)
+                  </h3>
+                  <div className="space-y-6 max-w-[650px]">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">Số phản hồi mong muốn</label>
+                        <input type="number" min="10" max="500" value={newSurveyTarget} onChange={(e) => setNewSurveyTarget(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">Thưởng mỗi lượt (đ)</label>
+                        <input type="number" min="5" max="100" value={newSurveyBounty} onChange={(e) => setNewSurveyBounty(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                      </div>
+                    </div>
+                    
+                    {/* Escrow Breakdown Info Box */}
+                    <div className="bg-[#f4fbf9] border border-[#e2f3ec] rounded-xl p-5 space-y-3 shadow-sm relative overflow-hidden">
+                      <h4 className="font-bold text-[#2e7d32] text-[15px] flex items-center gap-2">
+                        <Lock className="w-4 h-4" />
+                        Ký quỹ tài khoản tự động
+                      </h4>
+                      <div className="flex justify-between text-[14px] text-[#555] relative z-10">
+                        <span>Tổng số tiền ký quỹ (Lượt x Thưởng):</span>
+                        <span className="font-bold text-[#333]">{newSurveyTarget} x {newSurveyBounty} = {(newSurveyTarget * newSurveyBounty).toLocaleString("vi-VN")}đ</span>
+                      </div>
+                      <div className="flex justify-between text-[14px] border-t border-[#e2f3ec] pt-3 relative z-10">
+                        <span className="font-medium text-[#555]">Số dư khả dụng hiện tại:</span>
+                        <span className={`font-bold ${balance >= newSurveyTarget * newSurveyBounty ? "text-[#1b8045]" : "text-[#dc2626]"}`}>
+                          {balance.toLocaleString("vi-VN")}đ
+                        </span>
+                      </div>
+                      <div className="absolute right-0 bottom-0 opacity-10 translate-y-4 translate-x-4">
+                        <Wallet className="w-24 h-24 text-[#1b8045]" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {newSurveyStep === 3 && (
+                <div className="space-y-6">
+                  <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
+                    <Users className="w-5 h-5" />
+                    ĐỐI TƯỢNG KHẢO SÁT (BỘ LỌC NGƯỜI THAM GIA)
+                  </h3>
+
+                  {/* 2x2 Grid */}
+                  <div className="grid grid-cols-2 gap-x-8 gap-y-6">
+                    {/* Field 1 */}
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">
+                        Chủ đề khảo sát <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <option>Thời trang & Mua sắm</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Field 2 */}
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">
+                        Khu vực <span className="text-red-500">*</span>
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <option>Toàn quốc</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Field 3 */}
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">
+                        Khối ngành liên quan
+                      </label>
+                      <div className="relative">
+                        <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <option>Tất cả ngành học</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Field 4 */}
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">
+                        Mức thu nhập (Người trả lời)
+                      </label>
+                      <div className="relative">
+                        <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <option>Không yêu cầu</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Hobbies Multi-select */}
+                  <div className="space-y-2 pt-2">
+                    <label className="text-[14px] font-bold text-[#333]">
+                      Sở thích (Chọn nhiều)
+                    </label>
+                    <div className="min-h-[48px] border border-[#e0e0e0] rounded-xl bg-white p-1.5 flex items-center flex-wrap gap-2 pr-10 relative cursor-pointer">
+                      {['Thời trang & Làm đẹp', 'Công nghệ & Game', 'Du lịch & Trải nghiệm'].map((hobby) => (
+                        <div key={hobby} className="flex items-center gap-1.5 bg-[#e8f5ed] text-[#1b8045] px-3 py-1.5 rounded-full text-[13px] font-medium">
+                          {hobby}
+                          <button className="hover:bg-[#d1ebd9] rounded-full p-0.5"><X className="w-3.5 h-3.5" /></button>
+                        </div>
+                      ))}
+                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                    </div>
+                    <p className="text-[13px] text-[#666] pt-1">Bạn có thể chọn tối đa 5 sở thích.</p>
+                  </div>
+
+                  {/* Alert Box */}
+                  <div className="mt-8 bg-[#f4fbf9] border border-[#e2f3ec] rounded-xl p-5 flex gap-4 relative overflow-hidden shadow-sm">
+                    <Info className="w-[18px] h-[18px] text-[#426456] shrink-0 mt-0.5" />
+                    <div className="relative z-10 w-3/4">
+                      <h4 className="font-bold text-[#333] text-[15px] mb-2">Lưu ý</h4>
+                      <ul className="space-y-1.5">
+                        <li className="flex gap-2 text-[14px] text-[#555]"><span className="text-[#888]">•</span> Mức thưởng không được thấp hơn đề xuất tối thiểu và không vượt quá mức tối đa.</li>
+                        <li className="flex gap-2 text-[14px] text-[#555]"><span className="text-[#888]">•</span> Điểm sẽ được hoàn trả nếu khảo sát bị từ chối hoặc không được phê duyệt.</li>
+                      </ul>
+                    </div>
+                    {/* Decorative Illustration Mock */}
+                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center opacity-90">
+                      <div className="w-20 h-20 bg-[#d8f0e3] rounded-2xl flex items-center justify-center rotate-6 shadow-sm">
+                        <ClipboardCheck className="w-10 h-10 text-[#2e7d32]" />
+                      </div>
+                      <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
+                        <Target className="w-7 h-7 text-[#4ade80]" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-8 py-5 border-t border-[#f0f0f0] flex items-center justify-between bg-white">
+              <div className="flex items-center gap-2 text-[#666]">
+                <Lock className="w-[18px] h-[18px]" />
+                <span className="text-[14px]">Mọi thay đổi sẽ được lưu tạm</span>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => setNewSurveyStep(Math.max(1, newSurveyStep - 1))}
+                  disabled={newSurveyStep === 1}
+                  className={`w-9 h-9 rounded-full border border-[#e0e0e0] flex items-center justify-center transition-colors ${newSurveyStep === 1 ? 'bg-[#f5f5f5] text-[#ccc] cursor-not-allowed' : 'text-[#333] hover:bg-[#f5f5f5]'}`}>
+                  <ArrowLeft className="w-4 h-4" />
+                </button>
+                <span className="text-[14px] font-bold text-[#333]">{newSurveyStep} / 3</span>
+                <button 
+                  onClick={() => setNewSurveyStep(Math.min(3, newSurveyStep + 1))}
+                  disabled={newSurveyStep === 3}
+                  className={`w-9 h-9 rounded-full border border-[#e0e0e0] flex items-center justify-center transition-colors ${newSurveyStep === 3 ? 'bg-[#f5f5f5] text-[#ccc] cursor-not-allowed' : 'text-[#333] hover:bg-[#f5f5f5]'}`}>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="flex gap-3">
+                <button 
+                  onClick={() => { setShowFABModal(false); setNewSurveyStep(1); }}
+                  className="px-6 h-[44px] rounded-lg border border-[#e0e0e0] text-[#333] font-bold text-[14px] hover:bg-[#f5f5f5] transition-colors bg-white shadow-sm"
+                >
+                  Hủy
+                </button>
+                {newSurveyStep < 3 ? (
+                  <button 
+                    onClick={() => setNewSurveyStep(newSurveyStep + 1)}
+                    className="px-6 h-[44px] rounded-lg bg-[#00a651] text-white font-bold text-[14px] hover:bg-[#008c44] transition-colors flex items-center gap-2 shadow-sm"
                   >
-                    <option value="shopping">Thời trang & Mua sắm</option>
-                    <option value="ai">Trí tuệ nhân tạo (AI)</option>
-                    <option value="health">Sức khỏe tâm lý</option>
-                    <option value="finance">Tài chính & Ví điện tử</option>
-                    <option value="food">Giao hàng ẩm thực</option>
-                    <option value="english">Tiếng Anh & IELTS</option>
-                    <option value="gaming">Trải nghiệm chơi game</option>
-                    <option value="library">Dịch vụ Thư viện</option>
-                    <option value="social">Mạng xã hội</option>
-                  </select>
-                </div>
+                    Tiếp tục
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                ) : (
+                  <button 
+                    onClick={() => {
+                      showToast("Đã gửi duyệt khảo sát thành công!", "success");
+                      setShowFABModal(false);
+                      setNewSurveyStep(1);
+                    }}
+                    className="px-6 h-[44px] rounded-lg bg-[#00a651] text-white font-bold text-[14px] hover:bg-[#008c44] transition-colors flex items-center gap-2 shadow-sm"
+                  >
+                    <Check className="w-[18px] h-[18px]" />
+                    Đăng khảo sát & Ký quỹ
+                  </button>
+                )}
               </div>
-
-              {/* Escrow Breakdown Info Box */}
-              <div className="bg-[#FAF8F1] border border-amber-200 rounded-2xl p-4 space-y-2">
-                <h4 className="text-xs font-bold text-amber-800 flex items-center gap-1.5">
-                  <Lock className="w-4 h-4 text-amber-700" />
-                  <span>Ký quỹ tài khoản tự động</span>
-                </h4>
-                <div className="flex justify-between text-xs text-[#6B7280]">
-                  <span>Tổng số tiền ký quỹ (Lượt x Thưởng):</span>
-                  <span className="font-bold text-[#1A1A1A]">{newSurveyTarget} x {newSurveyBounty} = {(newSurveyTarget * newSurveyBounty).toLocaleString("vi-VN")}đ</span>
-                </div>
-                <div className="flex justify-between text-xs border-t border-[#E5E7EB] pt-2">
-                  <span className="font-medium text-[#6B7280]">Số dư khả dụng hiện tại:</span>
-                  <span className={`font-bold ${balance >= newSurveyTarget * newSurveyBounty ? "text-[#3db87a]" : "text-[#DC2626]"}`}>
-                    {balance.toLocaleString("vi-VN")}đ
-                  </span>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowFABModal(false)}
-                  className="w-1/3 h-11 border border-[#E5E7EB] text-[#1A1A1A] hover:bg-[#FAF8F1] font-bold text-xs rounded-full transition-colors"
-                >
-                  Hủy đăng
-                </button>
-                <button
-                  type="submit"
-                  disabled={balance < newSurveyTarget * newSurveyBounty}
-                  className={`flex-1 h-11 text-white font-bold text-xs rounded-full transition-all shadow-md flex items-center justify-center gap-2 ${balance < newSurveyTarget * newSurveyBounty
-                    ? "bg-gray-300 cursor-not-allowed shadow-none"
-                    : "bg-[#3db87a] hover:bg-[#13422C] shadow-green-950/20 active:scale-95"
-                    }`}
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>Đăng khảo sát & Ký quỹ</span>
-                </button>
-              </div>
-
-            </form>
+            </div>
 
           </div>
         </div>
