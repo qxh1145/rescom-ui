@@ -292,6 +292,7 @@ const INITIAL_NOTIFICATIONS: RescomNotification[] = [
 
 export default function RescomDashboard() {
   const [isPending, startTransition] = useTransition()
+  const [authChecked, setAuthChecked] = useState(false)
 
   // App States
   const [balance, setBalance] = useState(2450)
@@ -373,8 +374,19 @@ export default function RescomDashboard() {
     }, 4500)
   }
 
+  // Auth guard: redirect to login if not logged in
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true'
+    if (!isLoggedIn) {
+      window.location.href = '/login'
+      return
+    }
+    setAuthChecked(true)
+  }, [])
+
   // Load state from localStorage on mount
   useEffect(() => {
+    if (!authChecked) return
     const storedFrozenDismiss = localStorage.getItem("rescom_frozen_dismissed")
     if (storedFrozenDismiss === "true") {
       setShowFrozenBanner(false)
@@ -387,7 +399,7 @@ export default function RescomDashboard() {
 
     const storedFrozenCount = localStorage.getItem("rescom_frozen_count")
     if (storedFrozenCount) setFrozenCount(parseInt(storedFrozenCount))
-  }, [])
+  }, [authChecked])
 
   // Debounce search query
   useEffect(() => {
@@ -799,6 +811,15 @@ export default function RescomDashboard() {
       default:
         return <Share2 className={`${baseClass} text-pink-600`} />
     }
+  }
+
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F1]">
+        <div className="w-8 h-8 border-3 border-[#3db87a] border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
   }
 
   return (

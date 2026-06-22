@@ -49,8 +49,10 @@ export default function LoginPage() {
 
     if (mode === 'login') {
       if (email === MOCK_USER.email && password === MOCK_USER.password) {
+        localStorage.setItem('isLoggedIn', 'true')
+        const onboardingDone = localStorage.getItem('isOnboardingComplete') === 'true'
         setSuccess('Đăng nhập thành công! Đang chuyển hướng...')
-        setTimeout(() => { window.location.href = '/' }, 1500)
+        setTimeout(() => { window.location.href = onboardingDone ? '/' : '/onboarding' }, 1500)
       } else {
         setError('Email hoặc mật khẩu không chính xác')
         triggerShake()

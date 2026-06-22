@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { onboardingData } from '@/lib/onboarding-data';
 import { QuestionCard } from '@/components/onboarding/QuestionCard';
@@ -11,10 +11,27 @@ export default function OnboardingPage() {
   const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [authChecked, setAuthChecked] = useState(false);
 
   const currentSection = onboardingData[currentSectionIndex];
   const currentQuestion = currentSection?.questions[currentQuestionIndex];
   const isComplete = currentSectionIndex >= onboardingData.length;
+
+  // Auth guard: redirect if not logged in, or if onboarding already done
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+    const onboardingDone = localStorage.getItem('isOnboardingComplete') === 'true';
+
+    if (!isLoggedIn) {
+      window.location.href = '/login';
+      return;
+    }
+    if (onboardingDone) {
+      window.location.href = '/';
+      return;
+    }
+    setAuthChecked(true);
+  }, []);
 
   const handleSelect = (value: string) => {
     if (!currentQuestion) return;
@@ -34,8 +51,17 @@ export default function OnboardingPage() {
   };
 
   const handleFinishOnboarding = () => {
+    localStorage.setItem('isOnboardingComplete', 'true');
     window.location.href = '/';
   };
+
+  if (!authChecked) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#f0fdf4]">
+        <div className="w-8 h-8 border-3 border-[#4ade80] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <main className="relative min-h-screen w-full flex overflow-hidden bg-white">
