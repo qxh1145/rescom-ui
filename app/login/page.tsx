@@ -119,7 +119,7 @@ export default function LoginPage() {
         <div className="flex flex-col md:flex-row items-center justify-center w-full relative">
 
           {/* Mascot (Hidden on small screens, positioned to the left) */}
-          <div className="hidden md:block w-[380px] h-[380px] relative z-20 md:-mr-10 xl:-mr-10 transition-transform duration-500 ease-out transform hover:scale-105">
+          <div className="hidden md:block w-[380px] h-[380px] relative z-20 md:-mr-10 xl:-mr-10 mt-[15rem] transition-transform duration-500 ease-out transform hover:scale-105">
             <Image
               src={mascotSrc}
               alt="Rescom Mascot"
