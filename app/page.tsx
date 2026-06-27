@@ -50,7 +50,8 @@ import {
   ArrowRight,
   ClipboardCheck,
   Target,
-  GraduationCap
+  GraduationCap,
+  Briefcase
 } from "lucide-react"
 
 // Types & Interfaces
@@ -2148,10 +2149,10 @@ export default function RescomDashboard() {
       {/* FAB MODAL - CREATE NEW SURVEY */}
       {showFABModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo khảo sát mới">
-          <div className="bg-white rounded-2xl w-full max-w-[1487px] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
+          <div className="bg-white rounded-2xl w-full max-w-[900px] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
             
             {/* Header */}
-            <div className="px-8 pt-8 pb-6 border-b border-[#f0f0f0] flex justify-between items-start">
+            <div className="px-5 pt-8 pb-6 border-b border-[#f0f0f0] flex justify-between items-start">
               <div className="flex gap-4">
                 <div className="w-8 h-8 rounded-full border border-[#2e7d32] flex items-center justify-center text-[#2e7d32] shrink-0 mt-0.5">
                   <Plus className="w-5 h-5" />
@@ -2167,10 +2168,10 @@ export default function RescomDashboard() {
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto px-8 py-8">
+            <div className="flex-1 overflow-y-auto px-5 py-8">
               
               {/* Progress Steps */}
-              <div className="flex items-center justify-between mb-10 max-w-[1137px] mx-auto">
+              <div className="flex items-center justify-between mb-10">
                 {/* Step 1 */}
                 <div className="flex items-center gap-3">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep > 1 ? 'bg-[#1b8045] text-white' : newSurveyStep === 1 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#666]'}`}>
@@ -2205,7 +2206,7 @@ export default function RescomDashboard() {
                     <FileText className="w-5 h-5" />
                     THÔNG TIN KHẢO SÁT (NỘI DUNG VÀ LIÊN KẾT)
                   </h3>
-                  <div className="space-y-5 max-w-[1137px] mx-auto">
+                  <div className="space-y-5">
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">Tiêu đề khảo sát <span className="text-red-500">*</span></label>
                       <input type="text" value={newSurveyTitle} onChange={(e) => setNewSurveyTitle(e.target.value)} placeholder="Ví dụ: Đánh giá dịch vụ Grab tại TP.HCM..." className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
@@ -2316,7 +2317,7 @@ export default function RescomDashboard() {
                     <Target className="w-5 h-5" />
                     CẤU HÌNH PHÂN PHỐI
                   </h3>
-                  <div className="space-y-6 max-w-[1137px] mx-auto">
+                  <div className="space-y-6">
                     
                     {/* Row 1: Time estimate */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -2413,55 +2414,43 @@ export default function RescomDashboard() {
               )}
 
               {newSurveyStep === 3 && (
-                <div className="space-y-6 max-w-[1137px] mx-auto">
-                  <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
-                    <Users className="w-5 h-5" />
-                    ĐỐI TƯỢNG KHẢO SÁT (BỘ LỌC NGƯỜI THAM GIA)
-                  </h3>
+                <div className="space-y-6">
+                  <div>
+                    <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
+                      <Users className="w-5 h-5" />
+                      ĐỐI TƯỢNG KHẢO SÁT (BỘ LỌC NGƯỜI THAM GIA)
+                    </h3>
+                    <p className="text-[13px] text-[#666] mt-1.5">Hệ thống sẽ ưu tiên phân phối khảo sát đến người dùng phù hợp với bộ lọc đã chọn.</p>
+                  </div>
 
                   {/* Grid */}
                   <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                    {/* Field 1: Chủ đề khảo sát */}
+                    {/* Field 1: Độ tuổi */}
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">
-                        Chủ đề khảo sát <span className="text-red-500">*</span>
+                        Độ tuổi <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                          {ALL_SURVEY_TOPICS.map((topic) => (
-                            <option key={topic} value={topic}>{topic}</option>
-                          ))}
-                        </select>
+                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <div className="w-full min-h-[48px] pl-12 pr-10 border border-[#e0e0e0] rounded-xl bg-white flex items-center cursor-pointer">
+                          <div className="flex items-center gap-1 bg-[#e8f5ed] text-[#1b8045] px-2.5 py-1 rounded-md text-[13px] font-medium my-1.5">
+                            Dưới 18
+                            <button className="hover:bg-[#d1ebd9] rounded-sm p-0.5"><X className="w-3.5 h-3.5" /></button>
+                          </div>
+                        </div>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                       </div>
+                      <p className="text-[13px] text-[#666] pt-0.5">Bạn có thể chọn nhiều nhóm tuổi</p>
                     </div>
 
-                    {/* Field 2: Độ tuổi */}
-                    <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">
-                        Độ tuổi
-                      </label>
-                      <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                          <option>Dưới 18 tuổi</option>
-                          <option>Từ 18 - 22 tuổi</option>
-                          <option>Từ 23 - 25 tuổi</option>
-                          <option>Trên 25 tuổi</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                      </div>
-                    </div>
-
-                    {/* Field 3: Khu vực */}
+                    {/* Field 2: Khu vực */}
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">
                         Khu vực <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
                         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select value={newSurveyRegion} onChange={(e) => setNewSurveyRegion(e.target.value)} className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                        <select value={newSurveyRegion} onChange={(e) => setNewSurveyRegion(e.target.value)} className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
                           <option value="Toàn quốc">Toàn quốc</option>
                           <option value="Miền Bắc">Miền Bắc</option>
                           <option value="Miền Trung">Miền Trung</option>
@@ -2471,15 +2460,15 @@ export default function RescomDashboard() {
                       </div>
                     </div>
 
-                    {/* Field 4: Tỉnh thành (Hiển thị khi chọn Miền) */}
-                    {newSurveyRegion !== "Toàn quốc" ? (
+                    {/* Field 3: Tỉnh thành (Hiển thị khi chọn Miền) */}
+                    {newSurveyRegion !== "Toàn quốc" && (
                       <div className="space-y-2">
                         <label className="text-[14px] font-bold text-[#333]">
                           Tỉnh / Thành phố
                         </label>
                         <div className="relative">
                           <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                          <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
                             <option>Tất cả ({newSurveyRegion})</option>
                             {PROVINCES_BY_REGION[newSurveyRegion]?.map(prov => (
                               <option key={prov} value={prov}>{prov}</option>
@@ -2488,29 +2477,40 @@ export default function RescomDashboard() {
                           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-2 opacity-50 pointer-events-none">
-                        <label className="text-[14px] font-bold text-[#333]">Tỉnh / Thành phố</label>
-                        <div className="relative">
-                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                          <input type="text" disabled value="Áp dụng cho toàn quốc" className="w-full h-[48px] pl-12 pr-4 text-[15px] border border-[#e0e0e0] rounded-xl bg-[#f5f5f5]" />
-                        </div>
-                      </div>
                     )}
 
-                    {/* Field 5: Nghề nghiệp */}
+                    {/* Field 4: Nghề nghiệp */}
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">
-                        Nghề nghiệp
+                        Nghề nghiệp <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
-                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                        <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
+                          <option>Chọn nghề nghiệp</option>
                           <option>Học sinh / Sinh viên</option>
                           <option>Nhân viên văn phòng (Full-time)</option>
                           <option>Kinh doanh tự do / Freelancer</option>
                           <option>Quản lý / Chủ doanh nghiệp</option>
                           <option>Nghề nghiệp khác...</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Field 5: Mức thu nhập */}
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">
+                        Mức thu nhập (Người trả lời)
+                      </label>
+                      <div className="relative">
+                        <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
+                          <option>Không yêu cầu</option>
+                          <option>Dưới 3.000.000 VNĐ</option>
+                          <option>Từ 3.000.000 - 5.000.000 VNĐ</option>
+                          <option>Từ 5.000.000 - 10.000.000 VNĐ</option>
+                          <option>Trên 10.000.000 VNĐ</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                       </div>
@@ -2523,7 +2523,8 @@ export default function RescomDashboard() {
                       </label>
                       <div className="relative">
                         <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
+                          <option>Chọn khối ngành</option>
                           <option>Kinh tế / Quản trị / Marketing</option>
                           <option>Truyền thông / Đa phương tiện / Báo chí</option>
                           <option>Công nghệ Thông tin / Kỹ thuật phần mềm</option>
@@ -2533,41 +2534,6 @@ export default function RescomDashboard() {
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                       </div>
                     </div>
-
-                    {/* Field 7: Mức thu nhập */}
-                    <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">
-                        Mức thu nhập (Người trả lời)
-                      </label>
-                      <div className="relative">
-                        <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                          <option>Không yêu cầu</option>
-                          <option>Dưới 3.000.000 VNĐ</option>
-                          <option>Từ 3.000.000 - 5.000.000 VNĐ</option>
-                          <option>Từ 5.000.000 - 10.000.000 VNĐ</option>
-                          <option>Trên 10.000.000 VNĐ</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Hobbies Multi-select */}
-                  <div className="space-y-2 pt-2">
-                    <label className="text-[14px] font-bold text-[#333]">
-                      Sở thích (Chọn nhiều)
-                    </label>
-                    <div className="min-h-[48px] border border-[#e0e0e0] rounded-xl bg-white p-1.5 flex items-center flex-wrap gap-2 pr-10 relative cursor-pointer">
-                      {['Thời trang & Làm đẹp', 'Công nghệ & Game', 'Du lịch & Trải nghiệm'].map((hobby) => (
-                        <div key={hobby} className="flex items-center gap-1.5 bg-[#e8f5ed] text-[#1b8045] px-3 py-1.5 rounded-full text-[13px] font-medium">
-                          {hobby}
-                          <button className="hover:bg-[#d1ebd9] rounded-full p-0.5"><X className="w-3.5 h-3.5" /></button>
-                        </div>
-                      ))}
-                      <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                    </div>
-                    <p className="text-[13px] text-[#666] pt-1">Bạn có thể chọn tối đa 5 sở thích.</p>
                   </div>
 
                   {/* Alert Box */}
@@ -2595,7 +2561,7 @@ export default function RescomDashboard() {
             </div>
 
             {/* Footer */}
-            <div className="px-8 py-5 border-t border-[#f0f0f0] flex items-center justify-between bg-white">
+            <div className="px-5 py-5 border-t border-[#f0f0f0] flex items-center justify-between bg-white">
               <div className="flex items-center gap-2 text-[#666]">
                 <Lock className="w-[18px] h-[18px]" />
                 <span className="text-[14px]">Mọi thay đổi sẽ được lưu tạm</span>
