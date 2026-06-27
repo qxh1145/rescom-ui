@@ -355,6 +355,26 @@ export default function RescomDashboard() {
   const [newSurveyTarget, setNewSurveyTarget] = useState(50)
   const [newSurveyTopic, setNewSurveyTopic] = useState<Survey["topic"]>("shopping")
   const [newSurveyStep, setNewSurveyStep] = useState(1)
+  const [newSurveyRegion, setNewSurveyRegion] = useState("Toàn quốc")
+
+  const PROVINCES_BY_REGION: Record<string, string[]> = {
+    "Miền Bắc": ["Hà Nội", "Hải Phòng", "Quảng Ninh", "Bắc Ninh"],
+    "Miền Trung": ["Đà Nẵng", "Thừa Thiên Huế", "Nghệ An", "Khánh Hòa"],
+    "Miền Nam": ["TP. Hồ Chí Minh", "Cần Thơ", "Bình Dương", "Đồng Nai"],
+  }
+
+  // Survey Topic Multi-select States
+  const ALL_SURVEY_TOPICS = [
+    "Thời trang & Mua sắm", "Mỹ phẩm & Làm đẹp", "Ẩm thực & Giao hàng", "Công nghệ & Thiết bị số", "Trí tuệ nhân tạo (AI)",
+    "Mạng xã hội & Giải trí số", "Tài chính & Ví điện tử", "Giáo dục & Học tập", "Kỹ năng & Nghề nghiệp", "Sức khỏe tâm lý",
+    "Sức khỏe & Thể chất", "Du lịch & Trải nghiệm", "Thương hiệu & Quảng cáo", "Khởi nghiệp & Kinh doanh", "Môi trường & Lối sống bền vững",
+    "Giao thông & Đô thị", "Dịch vụ trường học (Thư viện, CLB...)"
+  ];
+  const [selectedSurveyTopics, setSelectedSurveyTopics] = useState<string[]>(['Thời trang & Mua sắm', 'Công nghệ & Thiết bị số', 'Trí tuệ nhân tạo (AI)', 'Giáo dục & Học tập'])
+  const [isSurveyTopicDropdownOpen, setIsSurveyTopicDropdownOpen] = useState(false)
+  const [surveyTopicSearch, setSurveyTopicSearch] = useState("")
+
+  const topicDropdownRef = useRef<HTMLDivElement>(null)
 
   // Floating points reward animation helpers
   const [floatingReward, setFloatingReward] = useState<{ amount: number; x: number; y: number } | null>(null)
@@ -443,6 +463,9 @@ export default function RescomDashboard() {
       }
       if (sortDropdownRef.current && !sortDropdownRef.current.contains(e.target as Node)) {
         setShowSortDropdown(false)
+      }
+      if (topicDropdownRef.current && !topicDropdownRef.current.contains(e.target as Node)) {
+        setIsSurveyTopicDropdownOpen(false)
       }
     }
     document.addEventListener("mousedown", handleOutsideClick)
@@ -2125,7 +2148,7 @@ export default function RescomDashboard() {
       {/* FAB MODAL - CREATE NEW SURVEY */}
       {showFABModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo khảo sát mới">
-          <div className="bg-white rounded-2xl w-full max-w-[850px] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
+          <div className="bg-white rounded-2xl w-full max-w-[1487px] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
             
             {/* Header */}
             <div className="px-8 pt-8 pb-6 border-b border-[#f0f0f0] flex justify-between items-start">
@@ -2147,7 +2170,7 @@ export default function RescomDashboard() {
             <div className="flex-1 overflow-y-auto px-8 py-8">
               
               {/* Progress Steps */}
-              <div className="flex items-center justify-between mb-10 max-w-[650px] mx-auto">
+              <div className="flex items-center justify-between mb-10 max-w-[1137px] mx-auto">
                 {/* Step 1 */}
                 <div className="flex items-center gap-3">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep > 1 ? 'bg-[#1b8045] text-white' : newSurveyStep === 1 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#666]'}`}>
@@ -2182,7 +2205,7 @@ export default function RescomDashboard() {
                     <FileText className="w-5 h-5" />
                     THÔNG TIN KHẢO SÁT (NỘI DUNG VÀ LIÊN KẾT)
                   </h3>
-                  <div className="space-y-5 max-w-[650px]">
+                  <div className="space-y-5 max-w-[1137px] mx-auto">
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">Tiêu đề khảo sát <span className="text-red-500">*</span></label>
                       <input type="text" value={newSurveyTitle} onChange={(e) => setNewSurveyTitle(e.target.value)} placeholder="Ví dụ: Đánh giá dịch vụ Grab tại TP.HCM..." className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
@@ -2191,27 +2214,96 @@ export default function RescomDashboard() {
                       <label className="text-[14px] font-bold text-[#333]">Đường dẫn Google Form <span className="text-red-500">*</span></label>
                       <input type="url" value={newSurveyUrl} onChange={(e) => setNewSurveyUrl(e.target.value)} placeholder="https://docs.google.com/forms/d/..." className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 relative">
                       <div className="space-y-2">
                         <label className="text-[14px] font-bold text-[#333]">Mã xác nhận hoàn thành <span className="text-red-500">*</span></label>
                         <input type="text" value={newSurveyCode} onChange={(e) => setNewSurveyCode(e.target.value)} placeholder="VD: HOANTHANH99" className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all font-mono uppercase" />
                       </div>
-                      <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">Chủ đề minh họa</label>
-                        <div className="relative">
-                          <select value={newSurveyTopic} onChange={(e) => setNewSurveyTopic(e.target.value as any)} className="w-full h-[48px] pl-4 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                            <option value="shopping">Thời trang & Mua sắm</option>
-                            <option value="ai">Trí tuệ nhân tạo (AI)</option>
-                            <option value="health">Sức khỏe tâm lý</option>
-                            <option value="finance">Tài chính & Ví điện tử</option>
-                            <option value="food">Giao hàng ẩm thực</option>
-                            <option value="english">Tiếng Anh & IELTS</option>
-                            <option value="gaming">Trải nghiệm chơi game</option>
-                            <option value="library">Dịch vụ Thư viện</option>
-                            <option value="social">Mạng xã hội</option>
-                          </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      <div className="space-y-2 relative" ref={topicDropdownRef}>
+                        <label className="text-[14px] font-bold text-[#333]">Chủ đề khảo sát <span className="text-red-500">*</span> <span className="text-[#666] font-normal text-[13px]">(Có thể chọn nhiều chủ đề)</span></label>
+                        
+                        <div 
+                          onClick={() => setIsSurveyTopicDropdownOpen(!isSurveyTopicDropdownOpen)}
+                          className={`min-h-[48px] border rounded-xl bg-white p-1.5 flex items-center flex-wrap gap-2 pr-10 relative cursor-pointer transition-all ${isSurveyTopicDropdownOpen ? 'border-[#1b8045] ring-1 ring-[#1b8045]' : 'border-[#e0e0e0]'}`}
+                        >
+                          {selectedSurveyTopics.length === 0 && (
+                            <span className="text-[15px] text-[#999] px-2.5 pt-1">Chọn chủ đề...</span>
+                          )}
+                          {selectedSurveyTopics.map((topic) => (
+                            <div key={topic} className="flex items-center gap-1.5 bg-[#e8f5ed] text-[#1b8045] px-3 py-1.5 rounded-full text-[13px] font-medium">
+                              {topic}
+                              <button 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedSurveyTopics(selectedSurveyTopics.filter(t => t !== topic));
+                                }}
+                                className="hover:bg-[#d1ebd9] rounded-full p-0.5"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                          <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] transition-transform ${isSurveyTopicDropdownOpen ? 'rotate-180' : ''}`} />
                         </div>
+
+                        {/* Dropdown Panel */}
+                        {isSurveyTopicDropdownOpen && (
+                          <div className="absolute top-[calc(100%+8px)] right-0 w-[calc(100vw-32px)] sm:w-[500px] md:w-[600px] max-w-[85vw] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-[#e0e0e0] z-50 overflow-hidden flex flex-col max-h-[400px]">
+                            {/* Search */}
+                            <div className="p-4 border-b border-[#f0f0f0]">
+                              <div className="relative">
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#666]" />
+                                <input 
+                                  type="text" 
+                                  placeholder="Tìm kiếm chủ đề" 
+                                  value={surveyTopicSearch}
+                                  onChange={(e) => setSurveyTopicSearch(e.target.value)}
+                                  className="w-full h-10 pl-10 pr-4 bg-[#f5f5f5] rounded-xl text-[14px] outline-none focus:bg-white focus:ring-1 focus:ring-[#1b8045] border border-transparent focus:border-[#1b8045] transition-all"
+                                />
+                              </div>
+                            </div>
+                            
+                            {/* Grid */}
+                            <div className="p-4 overflow-y-auto flex-1 custom-scrollbar">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
+                                {ALL_SURVEY_TOPICS.filter(t => removeDiacritics(t).includes(removeDiacritics(surveyTopicSearch))).map((topic) => {
+                                  const isSelected = selectedSurveyTopics.includes(topic);
+                                  return (
+                                    <label key={topic} className="flex items-start gap-2.5 cursor-pointer group">
+                                      <div className={`w-[18px] h-[18px] shrink-0 rounded-[4px] border-[1.5px] mt-0.5 flex items-center justify-center transition-colors ${isSelected ? 'bg-[#1b8045] border-[#1b8045]' : 'border-[#ccc] bg-white group-hover:border-[#1b8045]'}`}>
+                                        {isSelected && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
+                                      </div>
+                                      <input 
+                                        type="checkbox" 
+                                        className="hidden" 
+                                        checked={isSelected}
+                                        onChange={() => {
+                                          if (isSelected) {
+                                            setSelectedSurveyTopics(selectedSurveyTopics.filter(t => t !== topic));
+                                          } else {
+                                            setSelectedSurveyTopics([...selectedSurveyTopics, topic]);
+                                          }
+                                        }}
+                                      />
+                                      <span className={`text-[13.5px] leading-snug ${isSelected ? 'font-semibold text-[#1a1a1a]' : 'text-[#555]'}`}>{topic}</span>
+                                    </label>
+                                  )
+                                })}
+                              </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="px-5 py-3 border-t border-[#f0f0f0] bg-[#fafafa] flex items-center justify-between">
+                              <span className="text-[13px] text-[#666]">Đã chọn <span className="font-bold text-[#1a1a1a]">{selectedSurveyTopics.length}/{ALL_SURVEY_TOPICS.length}</span> chủ đề</span>
+                              <button 
+                                onClick={() => setSelectedSurveyTopics([])}
+                                className="text-[13px] font-bold text-[#1b8045] hover:underline"
+                              >
+                                Xóa tất cả
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -2221,55 +2313,115 @@ export default function RescomDashboard() {
               {newSurveyStep === 2 && (
                 <div className="space-y-6">
                   <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
-                    <Settings className="w-5 h-5" />
-                    CẤU HÌNH PHÂN PHỐI (SỐ LƯỢNG VÀ THƯỞNG)
+                    <Target className="w-5 h-5" />
+                    CẤU HÌNH PHÂN PHỐI
                   </h3>
-                  <div className="space-y-6 max-w-[650px]">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">Số phản hồi mong muốn</label>
-                        <input type="number" min="10" max="500" value={newSurveyTarget} onChange={(e) => setNewSurveyTarget(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">Thưởng mỗi lượt (đ)</label>
-                        <input type="number" min="5" max="100" value={newSurveyBounty} onChange={(e) => setNewSurveyBounty(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
-                      </div>
-                    </div>
+                  <div className="space-y-6 max-w-[1137px] mx-auto">
                     
-                    {/* Escrow Breakdown Info Box */}
-                    <div className="bg-[#f4fbf9] border border-[#e2f3ec] rounded-xl p-5 space-y-3 shadow-sm relative overflow-hidden">
-                      <h4 className="font-bold text-[#2e7d32] text-[15px] flex items-center gap-2">
-                        <Lock className="w-4 h-4" />
-                        Ký quỹ tài khoản tự động
-                      </h4>
-                      <div className="flex justify-between text-[14px] text-[#555] relative z-10">
-                        <span>Tổng số tiền ký quỹ (Lượt x Thưởng):</span>
-                        <span className="font-bold text-[#333]">{newSurveyTarget} x {newSurveyBounty} = {(newSurveyTarget * newSurveyBounty).toLocaleString("vi-VN")}đ</span>
+                    {/* Row 1: Time estimate */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">Thời gian hoàn thành (ước tính) <span className="text-red-500">*</span></label>
+                        <div className="relative">
+                          <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                          <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                            <option>5 – 10 phút</option>
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                        </div>
                       </div>
-                      <div className="flex justify-between text-[14px] border-t border-[#e2f3ec] pt-3 relative z-10">
-                        <span className="font-medium text-[#555]">Số dư khả dụng hiện tại:</span>
-                        <span className={`font-bold ${balance >= newSurveyTarget * newSurveyBounty ? "text-[#1b8045]" : "text-[#dc2626]"}`}>
-                          {balance.toLocaleString("vi-VN")}đ
-                        </span>
-                      </div>
-                      <div className="absolute right-0 bottom-0 opacity-10 translate-y-4 translate-x-4">
-                        <Wallet className="w-24 h-24 text-[#1b8045]" />
+                      <div className="flex items-start gap-2 md:mt-6">
+                        <Info className="w-[18px] h-[18px] text-[#666] shrink-0 mt-0.5" />
+                        <span className="text-[14px] text-[#666]">Hệ thống sẽ đề xuất mức thưởng<br />dựa trên thời gian hoàn thành.</span>
                       </div>
                     </div>
+
+                    {/* Row 2: Recommendation Box */}
+                    <div className="bg-[#f4fcf7] border border-[#c3ebd4] rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <Sparkles className="w-[22px] h-[22px] text-[#1b8045] shrink-0 mt-0.5" />
+                        <div>
+                          <h4 className="font-bold text-[#1b8045] text-[15px]">Đề xuất mức thưởng</h4>
+                          <p className="text-[14px] text-[#666] mt-1 max-w-[400px]">Dựa trên thời gian hoàn thành bạn chọn, hệ thống<br/>đề xuất mức thưởng phù hợp.</p>
+                        </div>
+                      </div>
+                      <div className="bg-[#e9f6ef] text-[#1b8045] px-4 py-2.5 rounded-lg font-bold text-[14px] border border-[#c3ebd4] shrink-0">
+                        Đề xuất: 10 – 20 điểm
+                      </div>
+                    </div>
+
+                    {/* Row 3: Target and Bounty Inputs */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">Số phản hồi mong muốn <span className="text-red-500">*</span></label>
+                        <div className="relative">
+                          <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                          <input type="number" min="10" max="500" value={newSurveyTarget} onChange={(e) => setNewSurveyTarget(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] pl-12 pr-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">Thưởng mỗi lượt (Điểm) <span className="text-red-500">*</span></label>
+                        <div className="relative">
+                          <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666] flex items-center justify-center rounded-full border-[1.5px] border-[#666]">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                          </div>
+                          <input type="number" min="5" max="100" value={newSurveyBounty} onChange={(e) => setNewSurveyBounty(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] pl-12 pr-[185px] text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                          <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#e9f6ef] text-[#1b8045] px-2.5 py-1.5 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 border border-[#c3ebd4]">
+                            Trong khoảng: 10 – 20 điểm
+                            <CheckCircle className="w-[14px] h-[14px]" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Row 4: Escrow Box */}
+                    <div className="bg-[#fffdf5] border border-[#fae8cc] rounded-xl p-6 shadow-sm flex flex-col gap-4">
+                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                        <div className="flex gap-4 max-w-[320px]">
+                          <Lock className="w-[26px] h-[26px] text-[#d97706] shrink-0 mt-0.5" />
+                          <div>
+                            <h4 className="font-bold text-[#d97706] text-[15px] mb-1">Ký quỹ tài khoản tự động</h4>
+                            <p className="text-[14px] text-[#666]">Hệ thống sẽ tạm giữ điểm để đảm bảo khảo sát được phân phối.</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-6">
+                          <div className="flex flex-col items-center">
+                            <span className="text-[13px] font-bold text-[#666] mb-1">Số phản hồi</span>
+                            <span className="text-[15px] font-bold text-[#1a1a1a]">{newSurveyTarget}</span>
+                          </div>
+                          <span className="text-[#999] font-medium text-[15px] mt-5">×</span>
+                          <div className="flex flex-col items-center">
+                            <span className="text-[13px] font-bold text-[#666] mb-1">Thưởng mỗi lượt</span>
+                            <span className="text-[15px] font-bold text-[#1a1a1a]">{newSurveyBounty}</span>
+                          </div>
+                          <span className="text-[#999] font-medium text-[15px] mt-5">=</span>
+                          <div className="flex flex-col items-center">
+                            <span className="text-[13px] font-bold text-[#666] mb-1">Tổng ký quỹ</span>
+                            <span className="text-[17px] font-bold text-[#d97706]">{(newSurveyTarget * newSurveyBounty).toLocaleString("vi-VN")} điểm</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="h-[1px] w-full bg-[#fae8cc] my-1"></div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-[14px] text-[#666]">Số dư khả dụng hiện tại:</span>
+                        <span className="font-bold text-[#1b8045] text-[15px]">{balance.toLocaleString("vi-VN")} điểm</span>
+                      </div>
+                    </div>
+
                   </div>
                 </div>
               )}
 
               {newSurveyStep === 3 && (
-                <div className="space-y-6">
+                <div className="space-y-6 max-w-[1137px] mx-auto">
                   <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
                     <Users className="w-5 h-5" />
                     ĐỐI TƯỢNG KHẢO SÁT (BỘ LỌC NGƯỜI THAM GIA)
                   </h3>
 
-                  {/* 2x2 Grid */}
+                  {/* Grid */}
                   <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                    {/* Field 1 */}
+                    {/* Field 1: Chủ đề khảo sát */}
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">
                         Chủ đề khảo sát <span className="text-red-500">*</span>
@@ -2277,27 +2429,94 @@ export default function RescomDashboard() {
                       <div className="relative">
                         <Tag className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
                         <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                          <option>Thời trang & Mua sắm</option>
+                          {ALL_SURVEY_TOPICS.map((topic) => (
+                            <option key={topic} value={topic}>{topic}</option>
+                          ))}
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                       </div>
                     </div>
 
-                    {/* Field 2 */}
+                    {/* Field 2: Độ tuổi */}
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">
+                        Độ tuổi
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <option>Dưới 18 tuổi</option>
+                          <option>Từ 18 - 22 tuổi</option>
+                          <option>Từ 23 - 25 tuổi</option>
+                          <option>Trên 25 tuổi</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Field 3: Khu vực */}
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">
                         Khu vực <span className="text-red-500">*</span>
                       </label>
                       <div className="relative">
                         <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                          <option>Toàn quốc</option>
+                        <select value={newSurveyRegion} onChange={(e) => setNewSurveyRegion(e.target.value)} className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <option value="Toàn quốc">Toàn quốc</option>
+                          <option value="Miền Bắc">Miền Bắc</option>
+                          <option value="Miền Trung">Miền Trung</option>
+                          <option value="Miền Nam">Miền Nam</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                       </div>
                     </div>
 
-                    {/* Field 3 */}
+                    {/* Field 4: Tỉnh thành (Hiển thị khi chọn Miền) */}
+                    {newSurveyRegion !== "Toàn quốc" ? (
+                      <div className="space-y-2">
+                        <label className="text-[14px] font-bold text-[#333]">
+                          Tỉnh / Thành phố
+                        </label>
+                        <div className="relative">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                          <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                            <option>Tất cả ({newSurveyRegion})</option>
+                            {PROVINCES_BY_REGION[newSurveyRegion]?.map(prov => (
+                              <option key={prov} value={prov}>{prov}</option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2 opacity-50 pointer-events-none">
+                        <label className="text-[14px] font-bold text-[#333]">Tỉnh / Thành phố</label>
+                        <div className="relative">
+                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                          <input type="text" disabled value="Áp dụng cho toàn quốc" className="w-full h-[48px] pl-12 pr-4 text-[15px] border border-[#e0e0e0] rounded-xl bg-[#f5f5f5]" />
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Field 5: Nghề nghiệp */}
+                    <div className="space-y-2">
+                      <label className="text-[14px] font-bold text-[#333]">
+                        Nghề nghiệp
+                      </label>
+                      <div className="relative">
+                        <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
+                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
+                          <option>Học sinh / Sinh viên</option>
+                          <option>Nhân viên văn phòng (Full-time)</option>
+                          <option>Kinh doanh tự do / Freelancer</option>
+                          <option>Quản lý / Chủ doanh nghiệp</option>
+                          <option>Nghề nghiệp khác...</option>
+                        </select>
+                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      </div>
+                    </div>
+
+                    {/* Field 6: Khối ngành liên quan */}
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">
                         Khối ngành liên quan
@@ -2305,13 +2524,17 @@ export default function RescomDashboard() {
                       <div className="relative">
                         <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
                         <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                          <option>Tất cả ngành học</option>
+                          <option>Kinh tế / Quản trị / Marketing</option>
+                          <option>Truyền thông / Đa phương tiện / Báo chí</option>
+                          <option>Công nghệ Thông tin / Kỹ thuật phần mềm</option>
+                          <option>Ngôn ngữ / Văn hóa / Du lịch - Khách sạn</option>
+                          <option>Khối ngành khác…</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                       </div>
                     </div>
 
-                    {/* Field 4 */}
+                    {/* Field 7: Mức thu nhập */}
                     <div className="space-y-2">
                       <label className="text-[14px] font-bold text-[#333]">
                         Mức thu nhập (Người trả lời)
@@ -2320,6 +2543,10 @@ export default function RescomDashboard() {
                         <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
                         <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
                           <option>Không yêu cầu</option>
+                          <option>Dưới 3.000.000 VNĐ</option>
+                          <option>Từ 3.000.000 - 5.000.000 VNĐ</option>
+                          <option>Từ 5.000.000 - 10.000.000 VNĐ</option>
+                          <option>Trên 10.000.000 VNĐ</option>
                         </select>
                         <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
                       </div>

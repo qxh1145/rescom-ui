@@ -1,10 +1,10 @@
-export type QuestionType = 'radio' | 'dropdown' | 'checkbox';
+export type QuestionType = 'radio' | 'dropdown' | 'checkbox' | 'location_complex';
 
 export interface Question {
   id: string;
   type: QuestionType;
   title: string;
-  options: string[];
+  options?: string[];
 }
 
 export interface Section {
@@ -17,7 +17,7 @@ export interface Section {
 export const onboardingData: Section[] = [
   {
     id: 'demographics',
-    title: 'THÔNG TIN NHÂN KHẨU HỌC',
+    title: 'THÔNG TIN NHÂN KHẨU HỌC CƠ BẢN',
     icon: '🌱',
     questions: [
       {
@@ -39,27 +39,8 @@ export const onboardingData: Section[] = [
       },
       {
         id: 'q3_location',
-        type: 'dropdown',
+        type: 'location_complex',
         title: '3. Bạn hiện đang sinh sống và làm việc/học tập tại Tỉnh/Thành phố nào?',
-        options: [
-          'Hà Nội',
-          'TP. Hồ Chí Minh',
-          'Đà Nẵng',
-          'Hải Phòng',
-          'Cần Thơ',
-          'Khác' // Simplified for demo purposes
-        ],
-      },
-      {
-        id: 'q4_marital',
-        type: 'radio',
-        title: '4. Tình trạng hôn nhân hiện tại của bạn là gì?',
-        options: [
-          'Độc thân',
-          'Đang trong mối quan hệ (Đang hẹn hò)',
-          'Đã kết hôn',
-          'Khác',
-        ],
       },
     ],
   },
@@ -69,52 +50,40 @@ export const onboardingData: Section[] = [
     icon: '🌿',
     questions: [
       {
-        id: 'q5_education',
+        id: 'q4_career',
         type: 'radio',
-        title: '5. Trình độ học vấn cao nhất của bạn hiện tại là gì?',
-        options: [
-          'Học sinh phổ thông',
-          'Sinh viên (Cao đẳng/Đại học)',
-          'Cử nhân / Kỹ sư (Đã tốt nghiệp Đại học/Cao đẳng)',
-          'Sau Đại học (Thạc sĩ, Tiến sĩ)',
-          'Khác',
-        ],
-      },
-      {
-        id: 'q6_career',
-        type: 'radio',
-        title: '6. Nghề nghiệp hiện tại của bạn là gì?',
+        title: '4. Nghề nghiệp hiện tại của bạn là gì?',
         options: [
           'Học sinh / Sinh viên',
           'Nhân viên văn phòng (Full-time)',
           'Kinh doanh tự do / Freelancer',
           'Quản lý / Chủ doanh nghiệp',
-          'Nghề nghiệp khác',
+          'Nghề nghiệp khác...',
         ],
       },
       {
-        id: 'q7_industry',
+        id: 'q5_industry',
         type: 'radio',
-        title: '7. Bạn đang theo học / hoặc đã tốt nghiệp thuộc khối ngành nào?',
+        title: '5. Bạn đang theo học / hoặc đã tốt nghiệp thuộc khối ngành nào?',
         options: [
           'Kinh tế / Quản trị / Marketing',
           'Truyền thông / Đa phương tiện / Báo chí',
           'Công nghệ Thông tin / Kỹ thuật phần mềm',
           'Ngôn ngữ / Văn hóa / Du lịch - Khách sạn',
-          'Khối ngành khác',
+          'Khối ngành khác...',
         ],
       },
     ],
   },
   {
     id: 'finance',
-    title: 'TÀI CHÍNH & THU NHẬP',
+    title: 'TÀI CHÍNH & THU NHẬP CÁ NHÂN',
     icon: '🍀',
     questions: [
       {
-        id: 'q8_income',
+        id: 'q6_income',
         type: 'radio',
-        title: '8. Mức thu nhập/Trợ cấp trung bình hàng tháng của bạn khoảng bao nhiêu?',
+        title: '6. Mức thu nhập/Trợ cấp trung bình hàng tháng của bạn khoảng bao nhiêu?',
         options: [
           'Dưới 3.000.000 VNĐ',
           'Từ 3.000.000 - 5.000.000 VNĐ',
@@ -122,45 +91,35 @@ export const onboardingData: Section[] = [
           'Trên 10.000.000 VNĐ',
         ],
       },
-      {
-        id: 'q9_source',
-        type: 'radio',
-        title: '9. Nguồn thu nhập/trợ cấp chính của bạn đến từ đâu?',
-        options: [
-          'Chu cấp từ gia đình',
-          'Đi làm thêm (Part-time / Thực tập có lương)',
-          'Kinh doanh tự do / Freelancer',
-          'Nguồn khác',
-        ],
-      },
     ],
   },
   {
-    id: 'shopping',
-    title: 'HÀNH VI MUA SẮM ONLINE',
+    id: 'interests',
+    title: 'SỞ THÍCH & PHONG CÁCH SỐNG',
     icon: '🌳',
     questions: [
       {
-        id: 'q10_platform',
-        type: 'radio',
-        title: '10. Bạn thường xuyên sử dụng nền tảng nào nhất để mua sắm online?',
+        id: 'q7_interests',
+        type: 'checkbox',
+        title: '7. Những lĩnh vực nào dưới đây khiến bạn quan tâm nhất? (Có thể chọn nhiều đáp án)',
         options: [
-          'Shopee',
-          'TikTok Shop',
-          'Lazada',
-          'Tiki',
-          'Mạng xã hội (Facebook, Instagram)',
-        ],
-      },
-      {
-        id: 'q11_category',
-        type: 'radio', // It uses radio in the md file, though checkboxes might be better. I'll stick to radio for now.
-        title: '11. Ngành hàng nào bạn chi tiêu nhiều nhất khi mua sắm online?',
-        options: [
-          'Thời trang & Phụ kiện',
+          'Thời trang & Mua sắm',
           'Mỹ phẩm & Làm đẹp',
-          'Đồ công nghệ',
-          'Đồ ăn uống (Food Delivery)',
+          'Ẩm thực & Giao hàng',
+          'Công nghệ & Thiết bị số',
+          'Trí tuệ nhân tạo (AI)',
+          'Mạng xã hội & Giải trí số',
+          'Tài chính & Ví điện tử',
+          'Giáo dục & Học tập',
+          'Kỹ năng & Nghề nghiệp',
+          'Sức khỏe tâm lý',
+          'Sức khỏe & Thể chất',
+          'Du lịch & Trải nghiệm',
+          'Thương hiệu & Quảng cáo',
+          'Khởi nghiệp & Kinh doanh',
+          'Môi trường & Lối sống bền vững',
+          'Giao thông & Đô thị',
+          'Dịch vụ trường học (Thư viện, CLB...)'
         ],
       },
     ],
