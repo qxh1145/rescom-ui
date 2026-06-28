@@ -294,6 +294,9 @@ const INITIAL_NOTIFICATIONS: RescomNotification[] = [
 export default function RescomDashboard() {
   const [isPending, startTransition] = useTransition()
   const [authChecked, setAuthChecked] = useState(false)
+  const [isOnboardingComplete, setIsOnboardingComplete] = useState(true)
+  const [starterMissionDone, setStarterMissionDone] = useState(true)
+  const [showStarterBanner, setShowStarterBanner] = useState(false)
 
   // App States
   const [balance, setBalance] = useState(2450)
@@ -402,6 +405,12 @@ export default function RescomDashboard() {
       window.location.href = '/login'
       return
     }
+    const onboardingDone = localStorage.getItem('isOnboardingComplete') === 'true'
+    const missionDone = localStorage.getItem('rescom_starter_mission_done') === 'true'
+    setIsOnboardingComplete(onboardingDone)
+    setStarterMissionDone(missionDone)
+    // Show banner if onboarding done but hasn't completed first survey yet
+    setShowStarterBanner(onboardingDone && !missionDone)
     setAuthChecked(true)
   }, [])
 
@@ -689,6 +698,31 @@ export default function RescomDashboard() {
     setNotifications((prev) => [newNotif, ...prev])
 
     showToast(`🎉 Thành công! Nhận +${reward}đ vào ví điểm!`, "success")
+
+    // Starter Mission: first survey completion awards 100 bonus points
+    if (!starterMissionDone) {
+      const bonusPoints = 100
+      const balanceAfterBonus = nextBalance + bonusPoints
+      setBalance(balanceAfterBonus)
+      localStorage.setItem("rescom_balance", balanceAfterBonus.toString())
+      setStarterMissionDone(true)
+      setShowStarterBanner(false)
+      localStorage.setItem('rescom_starter_mission_done', 'true')
+
+      setTimeout(() => {
+        showToast(`🏆 Nhiệm vụ khởi đầu hoàn thành! Nhận thêm +${bonusPoints}đ thưởng!`, "reward")
+      }, 1500)
+
+      const missionNotif: RescomNotification = {
+        id: `starter-${Date.now()}`,
+        type: "points_received",
+        title: `Thưởng nhiệm vụ khởi đầu +${bonusPoints}đ!`,
+        description: "Chúc mừng bạn đã hoàn thành khảo sát đầu tiên và nhận 100đ thưởng.",
+        timeAgo: "Vừa xong",
+        unread: true
+      }
+      setNotifications((prev) => [missionNotif, ...prev])
+    }
 
     // Check Frozen Credit progress (conditional logic)
     if (showFrozenBanner && frozenCount < 3) {
@@ -1251,6 +1285,53 @@ export default function RescomDashboard() {
 
               </div>
             </div>
+
+            {/* STARTER MISSION BANNER - Complete 1 survey to earn 100 bonus points */}
+            {showStarterBanner && !starterMissionDone && (
+              <div className="bg-[#FFF8E1] border border-[#FFE082] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+                <div className="flex items-start sm:items-center gap-4">
+                  <div className="w-12 h-12 rounded-full bg-[#FFF3C4] flex items-center justify-center flex-shrink-0 text-3xl">
+                    🏆
+                  </div>
+                  <div className="space-y-1.5 flex-1">
+                    <p className="text-sm font-bold text-[#5D4037]">
+                      Bạn đã hoàn thành 0/1 nhiệm vụ 🎉
+                    </p>
+                    <p className="text-xs text-[#795548]">
+                      Hoàn thành thêm 1 khảo sát bất kỳ để nhận{" "}
+                      <span className="font-bold text-[#E65100]">100 điểm</span> khởi đầu
+                    </p>
+                    <div className="flex items-center gap-3">
+                      <div className="w-40 h-2.5 rounded-full bg-white/80 overflow-hidden border border-[#FFE082]">
+                        <div
+                          className="h-full bg-gradient-to-r from-[#FF9800] to-[#F57C00] rounded-full transition-all duration-500"
+                          style={{ width: '0%' }}
+                        />
+                      </div>
+                      <span className="text-xs font-bold text-[#5D4037]">0/1</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 self-end sm:self-center">
+                  <button
+                    onClick={() => {
+                      const el = document.getElementById('survey-grid-region')
+                      if (el) el.scrollIntoView({ behavior: 'smooth' })
+                    }}
+                    className="px-5 py-2 text-sm font-bold bg-[#F57C00] text-white rounded-full hover:bg-[#E65100] transition-colors shadow-sm hover:shadow-md active:scale-95"
+                  >
+                    Làm khảo sát
+                  </button>
+                  <button
+                    onClick={() => setShowStarterBanner(false)}
+                    className="p-1.5 rounded-full text-[#795548] hover:bg-[#FFE082]/60 transition-colors"
+                    aria-label="Đóng biểu ngữ"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* 3B. FROZEN CREDIT BANNER (CONDITIONAL) */}
             {showFrozenBanner && frozenCount < 3 && (

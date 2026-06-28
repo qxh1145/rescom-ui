@@ -1,9 +1,9 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import type { Question } from '@/lib/onboarding-data';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronDown, Search, Check } from 'lucide-react';
 
 interface QuestionCardProps {
   question: Question;
@@ -22,176 +22,110 @@ export function QuestionCard({
   currentStep,
   totalSteps
 }: QuestionCardProps) {
-  const [locScope, setLocScope] = useState<string | null>(null);
-  const [locRegion, setLocRegion] = useState<string | null>(null);
-  const [locCities, setLocCities] = useState<string[]>([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
+  // Close dropdown when clicking outside
   useEffect(() => {
-    if (question.type === 'location_complex') {
-      if (selectedValue && selectedValue !== '') {
-        try {
-          const parsed = JSON.parse(selectedValue);
-          setLocScope(parsed.scope || null);
-          setLocRegion(parsed.region || null);
-          setLocCities(parsed.cities || []);
-        } catch(e) {}
-      } else {
-        setLocScope(null);
-        setLocRegion(null);
-        setLocCities([]);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setDropdownOpen(false);
+        setSearchTerm('');
       }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Focus search input when dropdown opens
+  useEffect(() => {
+    if (dropdownOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
     }
-  }, [question.id, selectedValue, question.type]);
+  }, [dropdownOpen]);
 
-  const handleScopeSelect = (scope: string) => {
-    setLocScope(scope);
-    if (scope === 'Toàn quốc') {
-      onSelect(JSON.stringify({ scope }));
-    } else {
-      onSelect('');
-    }
-  };
+  const renderDropdown = () => {
+    if (!question.options) return null;
 
-  const handleRegionSelect = (region: string) => {
-    setLocRegion(region);
-    onSelect(JSON.stringify({ scope: locScope, region }));
-  };
-
-  const handleCityToggle = (city: string) => {
-    const newCities = locCities.includes(city)
-      ? locCities.filter(c => c !== city)
-      : [...locCities, city];
-    setLocCities(newCities);
-    if (newCities.length > 0) {
-      onSelect(JSON.stringify({ scope: locScope, cities: newCities }));
-    } else {
-      onSelect('');
-    }
-  };
-
-  const renderLocationComplex = () => {
-    const scopes = ['Toàn quốc', 'Theo miền', 'Theo tỉnh/thành phố'];
-    const regions = ['Miền Bắc', 'Miền Trung', 'Miền Nam'];
-    const citiesList = ['Hồ Chí Minh', 'Hà Nội', 'Đà Nẵng', 'Cần Thơ', 'Hải Phòng', 'Khác'];
+    const filteredOptions = question.options.filter(option =>
+      option.toLowerCase().includes(searchTerm.toLowerCase())
+    );
 
     return (
-      <div className="space-y-6">
-        <div className="space-y-3.5">
-          <p className="text-[15px] font-semibold text-[#1a3628] mb-2">Phạm vi khu vực*</p>
-          {scopes.map(scope => {
-            const isSelected = locScope === scope;
-            return (
-              <button
-                key={scope}
-                onClick={() => handleScopeSelect(scope)}
-                className={`w-full text-left px-5 py-4 rounded-[18px] border-[1.5px] transition-all duration-200 flex items-center justify-between ${
-                  isSelected
-                    ? 'border-[#4ade80] bg-white'
-                    : 'border-[#f0f0f0] hover:border-[#4ade80]'
-                }`}
-              >
-                <span className={`text-[15px] font-medium ${isSelected ? 'text-[#1a3628]' : 'text-[#333]'}`}>
-                  {scope}
-                </span>
-                <div
-                  className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
-                    isSelected
-                      ? 'border-[#4ade80] bg-white'
-                      : 'border-[#e0e0e0]'
-                  }`}
-                >
-                  {isSelected && (
-                    <motion.div 
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      className="w-2.5 h-2.5 rounded-full bg-[#4ade80]" 
-                    />
-                  )}
-                </div>
-              </button>
-            );
-          })}
-        </div>
+      <div className="relative" ref={dropdownRef}>
+        {/* Trigger Button */}
+        <button
+          onClick={() => setDropdownOpen(!dropdownOpen)}
+          className={`w-full text-left px-5 py-4 rounded-[18px] border-[1.5px] transition-all duration-200 flex items-center justify-between ${
+            selectedValue
+              ? 'border-[#4ade80] bg-white'
+              : 'border-[#f0f0f0] hover:border-[#4ade80] bg-white'
+          }`}
+        >
+          <span className={`text-[15px] font-medium ${selectedValue ? 'text-[#1a3628]' : 'text-[#9ca3af]'}`}>
+            {selectedValue || 'Chọn tỉnh/thành phố...'}
+          </span>
+          <ChevronDown className={`w-5 h-5 text-[#9ca3af] transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+        </button>
 
+        {/* Dropdown Panel */}
         <AnimatePresence>
-          {locScope === 'Theo miền' && (
+          {dropdownOpen && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-3.5 overflow-hidden"
+              initial={{ opacity: 0, y: -8, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -8, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className="absolute z-50 mt-2 w-full bg-white rounded-2xl border border-[#e5e7eb] shadow-[0_12px_40px_rgba(0,0,0,0.12)] overflow-hidden"
             >
-              <p className="text-[15px] font-semibold text-[#1a3628] mt-4 mb-2">Chọn miền:</p>
-              {regions.map(region => {
-                const isSelected = locRegion === region;
-                return (
-                  <button
-                    key={region}
-                    onClick={() => handleRegionSelect(region)}
-                    className={`w-full text-left px-5 py-3 rounded-[14px] border transition-all duration-200 flex items-center justify-between ${
-                      isSelected
-                        ? 'border-[#4ade80] bg-[#f0fdf4]'
-                        : 'border-[#e5e7eb] hover:border-[#4ade80]'
-                    }`}
-                  >
-                    <span className={`text-[14px] font-medium ${isSelected ? 'text-[#1a3628]' : 'text-[#4b5563]'}`}>
-                      {region}
-                    </span>
-                    <div
-                      className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${
-                        isSelected
-                          ? 'border-[#4ade80] bg-white'
-                          : 'border-[#d1d5db]'
-                      }`}
-                    >
-                      {isSelected && <div className="w-2 h-2 rounded-full bg-[#4ade80]" />}
-                    </div>
-                  </button>
-                );
-              })}
-            </motion.div>
-          )}
+              {/* Search Input */}
+              <div className="p-3 border-b border-[#f0f0f0]">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9ca3af]" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="Tìm tỉnh/thành phố..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="w-full pl-9 pr-4 py-2.5 text-[14px] rounded-xl bg-[#f9fafb] border border-[#e5e7eb] focus:border-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 transition-all placeholder:text-[#9ca3af]"
+                  />
+                </div>
+              </div>
 
-          {locScope === 'Theo tỉnh/thành phố' && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="space-y-3.5 overflow-hidden"
-            >
-              <p className="text-[15px] font-semibold text-[#1a3628] mt-4 mb-2">Chọn tỉnh/thành phố (có thể chọn nhiều):</p>
-              <div className="grid grid-cols-2 gap-3">
-                {citiesList.map(city => {
-                  const isSelected = locCities.includes(city);
-                  return (
-                    <button
-                      key={city}
-                      onClick={() => handleCityToggle(city)}
-                      className={`text-left px-4 py-3 rounded-[14px] border transition-all duration-200 flex items-center gap-3 ${
-                        isSelected
-                          ? 'border-[#4ade80] bg-[#f0fdf4]'
-                          : 'border-[#e5e7eb] hover:border-[#4ade80]'
-                      }`}
-                    >
-                      <div
-                        className={`w-4 h-4 rounded-[4px] border flex items-center justify-center transition-colors ${
+              {/* Options List */}
+              <div className="max-h-[280px] overflow-y-auto p-2 custom-scrollbar">
+                {filteredOptions.length === 0 ? (
+                  <div className="px-4 py-6 text-center text-[14px] text-[#9ca3af]">
+                    Không tìm thấy kết quả
+                  </div>
+                ) : (
+                  filteredOptions.map((option) => {
+                    const isSelected = selectedValue === option;
+                    return (
+                      <button
+                        key={option}
+                        onClick={() => {
+                          onSelect(option);
+                          setDropdownOpen(false);
+                          setSearchTerm('');
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-medium transition-all duration-150 flex items-center justify-between ${
                           isSelected
-                            ? 'border-[#4ade80] bg-[#4ade80]'
-                            : 'border-[#d1d5db] bg-white'
+                            ? 'bg-[#f0fdf4] text-[#1a3628]'
+                            : 'text-[#4b5563] hover:bg-[#f9fafb]'
                         }`}
                       >
+                        <span>{option}</span>
                         {isSelected && (
-                          <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
+                          <Check className="w-4 h-4 text-[#4ade80]" />
                         )}
-                      </div>
-                      <span className={`text-[14px] font-medium ${isSelected ? 'text-[#1a3628]' : 'text-[#4b5563]'}`}>
-                        {city}
-                      </span>
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  })
+                )}
               </div>
             </motion.div>
           )}
@@ -312,8 +246,8 @@ export function QuestionCard({
         {question.title}
       </h2>
 
-      {question.type === 'location_complex' 
-        ? renderLocationComplex() 
+      {question.type === 'dropdown'
+        ? renderDropdown()
         : question.type === 'checkbox'
           ? renderCheckboxOptions()
           : renderStandardOptions()}
@@ -335,3 +269,4 @@ export function QuestionCard({
     </div>
   );
 }
+

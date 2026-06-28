@@ -78,9 +78,11 @@ export default function OnboardingPage() {
 
       {/* Top Header Logo */}
       <div className="absolute top-8 left-8 z-30">
-        <h1 className="font-display font-bold text-[28px] text-[#0ea5e9]">
-          Rescom
-        </h1>
+        <img
+          src="/rescom-logo.png"
+          alt="Rescom"
+          className="w-[130px] h-auto object-contain"
+        />
       </div>
 
       {/* Content Layout Grid */}
@@ -106,9 +108,9 @@ export default function OnboardingPage() {
         </div>
 
         {/* RIGHT PANE: Interactive Form */}
-        <div className="w-full md:w-1/2 flex items-center justify-center md:justify-end order-1 md:order-2 h-full z-20 pt-16 md:pt-0">
-          <AnimatePresence mode="wait">
-            {!isComplete && (
+        {!isComplete && (
+          <div className="w-full md:w-1/2 flex items-center justify-center md:justify-end order-1 md:order-2 h-full z-20 pt-16 md:pt-0">
+            <AnimatePresence mode="wait">
               <motion.div
                 key={currentQuestion.id}
                 initial={{ opacity: 0, x: 20 }}
@@ -126,26 +128,41 @@ export default function OnboardingPage() {
                   totalSteps={onboardingData.length}
                 />
               </motion.div>
-            )}
-
-            {isComplete && (
-              <motion.div
-                key="completion"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="w-full flex justify-center md:justify-end"
-              >
-                <div className="bg-white rounded-[32px] shadow-[0_8px_40px_rgb(0,0,0,0.06)] p-10 w-full max-w-[480px]">
-                  <CompletionScreen
-                    answers={answers}
-                    onComplete={handleFinishOnboarding}
-                  />
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+            </AnimatePresence>
+          </div>
+        )}
       </div>
+
+      {/* Completion Modal - Full screen centered overlay */}
+      <AnimatePresence>
+        {isComplete && (
+          <motion.div
+            key="completion"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+          >
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+            />
+            {/* Card */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.85, y: 30 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ duration: 0.6, type: 'spring', bounce: 0.35 }}
+              className="relative"
+            >
+              <CompletionScreen
+                answers={answers}
+                onComplete={handleFinishOnboarding}
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
