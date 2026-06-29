@@ -2607,7 +2607,7 @@ export default function RescomDashboard() {
                         <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
                           <option>Chọn khối ngành</option>
                           <option>Kinh tế / Quản trị / Marketing</option>
-                          <option>Truyền thông / Đa phương tiện / Báo chí</option>
+                          <option>Truyền thông đa phương tiện / Báo chí</option>
                           <option>Công nghệ Thông tin / Kỹ thuật phần mềm</option>
                           <option>Ngôn ngữ / Văn hóa / Du lịch - Khách sạn</option>
                           <option>Khối ngành khác…</option>
