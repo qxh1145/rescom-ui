@@ -581,7 +581,7 @@ export default function RescomDashboard() {
       if (selectedDuration.includes("Từ 5 - 10 phút") && time >= 5 && time <= 10) timeMatch = true
       if (selectedDuration.includes("Từ 10 - 15 phút") && time >= 10 && time <= 15) timeMatch = true
       if (selectedDuration.includes("Trên 15 phút") && time > 15) timeMatch = true
-      
+
       if (!timeMatch) return false
     }
 
@@ -1287,7 +1287,7 @@ export default function RescomDashboard() {
             </div>
 
             {/* STARTER MISSION BANNER - Complete 1 survey to earn 100 bonus points */}
-            {showStarterBanner && !starterMissionDone && (
+            {/* {showStarterBanner && !starterMissionDone && (
               <div className="bg-[#FFF8E1] border border-[#FFE082] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
                 <div className="flex items-start sm:items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-[#FFF3C4] flex items-center justify-center flex-shrink-0 text-3xl">
@@ -1331,7 +1331,7 @@ export default function RescomDashboard() {
                   </button>
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* 3B. FROZEN CREDIT BANNER (CONDITIONAL) */}
             {showFrozenBanner && frozenCount < 3 && (
@@ -1997,7 +1997,7 @@ export default function RescomDashboard() {
               <div className="space-y-3">
                 <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Sở thích</span>
                 <div className="flex flex-wrap gap-3">
-                  {["Công nghệ & Game", "Thời trang & Làm đẹp", "Du lịch & Trải nghiệm", "Thể thao & Sức khỏe", "Ẩm thực (F&B)", "Nghệ thuật & Sách", "Hoạt động xã hội"].map((hobby) => {
+                  {ALL_SURVEY_TOPICS.map((hobby) => {
                     const selected = selectedHobbies.includes(hobby)
                     return (
                       <button
@@ -2231,7 +2231,7 @@ export default function RescomDashboard() {
       {showFABModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo khảo sát mới">
           <div className="bg-white rounded-2xl w-full max-w-[900px] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
-            
+
             {/* Header */}
             <div className="px-5 pt-8 pb-6 border-b border-[#f0f0f0] flex justify-between items-start">
               <div className="flex gap-4">
@@ -2250,7 +2250,7 @@ export default function RescomDashboard() {
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto px-5 py-8">
-              
+
               {/* Progress Steps */}
               <div className="flex items-center justify-between mb-10">
                 {/* Step 1 */}
@@ -2261,7 +2261,7 @@ export default function RescomDashboard() {
                   <span className={`text-[15px] whitespace-nowrap ${newSurveyStep >= 1 ? 'text-[#1b8045] font-bold' : 'text-[#666] font-medium'}`}>Thông tin khảo sát</span>
                 </div>
                 <div className={`flex-1 h-[2px] mx-4 ${newSurveyStep >= 2 ? 'bg-[#1b8045] opacity-40' : 'bg-[#e0e0e0]'}`} />
-                
+
                 {/* Step 2 */}
                 <div className="flex items-center gap-3">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep > 2 ? 'bg-[#1b8045] text-white' : newSurveyStep === 2 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#999]'}`}>
@@ -2270,7 +2270,7 @@ export default function RescomDashboard() {
                   <span className={`text-[15px] whitespace-nowrap ${newSurveyStep >= 2 ? 'text-[#1b8045] font-bold' : 'text-[#999] font-medium'}`}>Cấu hình phân phối</span>
                 </div>
                 <div className={`flex-1 h-[2px] mx-4 ${newSurveyStep >= 3 ? 'bg-[#1b8045] opacity-40' : 'bg-[#e0e0e0]'}`} />
-                
+
                 {/* Step 3 */}
                 <div className="flex items-center gap-3">
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep === 3 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#999]'}`}>
@@ -2303,8 +2303,8 @@ export default function RescomDashboard() {
                       </div>
                       <div className="space-y-2 relative" ref={topicDropdownRef}>
                         <label className="text-[14px] font-bold text-[#333]">Chủ đề khảo sát <span className="text-red-500">*</span> <span className="text-[#666] font-normal text-[13px]">(Có thể chọn nhiều chủ đề)</span></label>
-                        
-                        <div 
+
+                        <div
                           onClick={() => setIsSurveyTopicDropdownOpen(!isSurveyTopicDropdownOpen)}
                           className={`min-h-[48px] border rounded-xl bg-white p-1.5 flex items-center flex-wrap gap-2 pr-10 relative cursor-pointer transition-all ${isSurveyTopicDropdownOpen ? 'border-[#1b8045] ring-1 ring-[#1b8045]' : 'border-[#e0e0e0]'}`}
                         >
@@ -2314,7 +2314,7 @@ export default function RescomDashboard() {
                           {selectedSurveyTopics.map((topic) => (
                             <div key={topic} className="flex items-center gap-1.5 bg-[#e8f5ed] text-[#1b8045] px-3 py-1.5 rounded-full text-[13px] font-medium">
                               {topic}
-                              <button 
+                              <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedSurveyTopics(selectedSurveyTopics.filter(t => t !== topic));
@@ -2335,16 +2335,16 @@ export default function RescomDashboard() {
                             <div className="p-4 border-b border-[#f0f0f0]">
                               <div className="relative">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#666]" />
-                                <input 
-                                  type="text" 
-                                  placeholder="Tìm kiếm chủ đề" 
+                                <input
+                                  type="text"
+                                  placeholder="Tìm kiếm chủ đề"
                                   value={surveyTopicSearch}
                                   onChange={(e) => setSurveyTopicSearch(e.target.value)}
                                   className="w-full h-10 pl-10 pr-4 bg-[#f5f5f5] rounded-xl text-[14px] outline-none focus:bg-white focus:ring-1 focus:ring-[#1b8045] border border-transparent focus:border-[#1b8045] transition-all"
                                 />
                               </div>
                             </div>
-                            
+
                             {/* Grid */}
                             <div className="p-4 overflow-y-auto flex-1 custom-scrollbar">
                               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
@@ -2355,9 +2355,9 @@ export default function RescomDashboard() {
                                       <div className={`w-[18px] h-[18px] shrink-0 rounded-[4px] border-[1.5px] mt-0.5 flex items-center justify-center transition-colors ${isSelected ? 'bg-[#1b8045] border-[#1b8045]' : 'border-[#ccc] bg-white group-hover:border-[#1b8045]'}`}>
                                         {isSelected && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
                                       </div>
-                                      <input 
-                                        type="checkbox" 
-                                        className="hidden" 
+                                      <input
+                                        type="checkbox"
+                                        className="hidden"
                                         checked={isSelected}
                                         onChange={() => {
                                           if (isSelected) {
@@ -2377,7 +2377,7 @@ export default function RescomDashboard() {
                             {/* Footer */}
                             <div className="px-5 py-3 border-t border-[#f0f0f0] bg-[#fafafa] flex items-center justify-between">
                               <span className="text-[13px] text-[#666]">Đã chọn <span className="font-bold text-[#1a1a1a]">{selectedSurveyTopics.length}/{ALL_SURVEY_TOPICS.length}</span> chủ đề</span>
-                              <button 
+                              <button
                                 onClick={() => setSelectedSurveyTopics([])}
                                 className="text-[13px] font-bold text-[#1b8045] hover:underline"
                               >
@@ -2399,7 +2399,7 @@ export default function RescomDashboard() {
                     CẤU HÌNH PHÂN PHỐI
                   </h3>
                   <div className="space-y-6">
-                    
+
                     {/* Row 1: Time estimate */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                       <div className="space-y-2">
@@ -2424,7 +2424,7 @@ export default function RescomDashboard() {
                         <Sparkles className="w-[22px] h-[22px] text-[#1b8045] shrink-0 mt-0.5" />
                         <div>
                           <h4 className="font-bold text-[#1b8045] text-[15px]">Đề xuất mức thưởng</h4>
-                          <p className="text-[14px] text-[#666] mt-1 max-w-[400px]">Dựa trên thời gian hoàn thành bạn chọn, hệ thống<br/>đề xuất mức thưởng phù hợp.</p>
+                          <p className="text-[14px] text-[#666] mt-1 max-w-[400px]">Dựa trên thời gian hoàn thành bạn chọn, hệ thống<br />đề xuất mức thưởng phù hợp.</p>
                         </div>
                       </div>
                       <div className="bg-[#e9f6ef] text-[#1b8045] px-4 py-2.5 rounded-lg font-bold text-[14px] border border-[#c3ebd4] shrink-0">
@@ -2445,7 +2445,7 @@ export default function RescomDashboard() {
                         <label className="text-[14px] font-bold text-[#333]">Thưởng mỗi lượt (Điểm) <span className="text-red-500">*</span></label>
                         <div className="relative">
                           <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666] flex items-center justify-center rounded-full border-[1.5px] border-[#666]">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
                           </div>
                           <input type="number" min="5" max="100" value={newSurveyBounty} onChange={(e) => setNewSurveyBounty(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] pl-12 pr-[185px] text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
                           <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#e9f6ef] text-[#1b8045] px-2.5 py-1.5 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 border border-[#c3ebd4]">
@@ -2647,16 +2647,16 @@ export default function RescomDashboard() {
                 <Lock className="w-[18px] h-[18px]" />
                 <span className="text-[14px]">Mọi thay đổi sẽ được lưu tạm</span>
               </div>
-              
+
               <div className="flex items-center gap-4">
-                <button 
+                <button
                   onClick={() => setNewSurveyStep(Math.max(1, newSurveyStep - 1))}
                   disabled={newSurveyStep === 1}
                   className={`w-9 h-9 rounded-full border border-[#e0e0e0] flex items-center justify-center transition-colors ${newSurveyStep === 1 ? 'bg-[#f5f5f5] text-[#ccc] cursor-not-allowed' : 'text-[#333] hover:bg-[#f5f5f5]'}`}>
                   <ArrowLeft className="w-4 h-4" />
                 </button>
                 <span className="text-[14px] font-bold text-[#333]">{newSurveyStep} / 3</span>
-                <button 
+                <button
                   onClick={() => setNewSurveyStep(Math.min(3, newSurveyStep + 1))}
                   disabled={newSurveyStep === 3}
                   className={`w-9 h-9 rounded-full border border-[#e0e0e0] flex items-center justify-center transition-colors ${newSurveyStep === 3 ? 'bg-[#f5f5f5] text-[#ccc] cursor-not-allowed' : 'text-[#333] hover:bg-[#f5f5f5]'}`}>
@@ -2665,14 +2665,14 @@ export default function RescomDashboard() {
               </div>
 
               <div className="flex gap-3">
-                <button 
+                <button
                   onClick={() => { setShowFABModal(false); setNewSurveyStep(1); }}
                   className="px-6 h-[44px] rounded-lg border border-[#e0e0e0] text-[#333] font-bold text-[14px] hover:bg-[#f5f5f5] transition-colors bg-white shadow-sm"
                 >
                   Hủy
                 </button>
                 {newSurveyStep < 3 ? (
-                  <button 
+                  <button
                     onClick={() => setNewSurveyStep(newSurveyStep + 1)}
                     className="px-6 h-[44px] rounded-lg bg-[#00a651] text-white font-bold text-[14px] hover:bg-[#008c44] transition-colors flex items-center gap-2 shadow-sm"
                   >
@@ -2680,7 +2680,7 @@ export default function RescomDashboard() {
                     <ArrowRight className="w-5 h-5" />
                   </button>
                 ) : (
-                  <button 
+                  <button
                     onClick={() => {
                       showToast("Đã gửi duyệt khảo sát thành công!", "success");
                       setShowFABModal(false);
