@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from 'next'
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google'
+import { Inter, Plus_Jakarta_Sans, Kalam, Patrick_Hand } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
@@ -12,6 +12,20 @@ const inter = Inter({
 const plusJakarta = Plus_Jakarta_Sans({ 
   subsets: ["latin", "vietnamese"],
   variable: '--font-plus-jakarta',
+  display: 'swap',
+})
+
+const kalam = Kalam({
+  weight: ['400', '700'],
+  subsets: ['latin'],
+  variable: '--font-kalam',
+  display: 'swap',
+})
+
+const patrickHand = Patrick_Hand({
+  weight: ['400'],
+  subsets: ['latin'],
+  variable: '--font-patrick-hand',
   display: 'swap',
 })
 
@@ -55,7 +69,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="vi" className={`${inter.variable} ${plusJakarta.variable}`}>
+    <html lang="vi" className={`${inter.variable} ${plusJakarta.variable} ${kalam.variable} ${patrickHand.variable}`}>
       <body className="font-sans antialiased bg-background">
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}

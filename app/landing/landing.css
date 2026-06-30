@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-kalam: var(--font-kalam);
+  --font-patrick: var(--font-patrick-hand);
+
+  --color-landing-bg: #fdfbf7;
+  --color-landing-fg: #2d2d2d;
+  --color-landing-muted: #e5e0d8;
+  --color-landing-accent: #ff4d4d;
+  --color-landing-border: #2d2d2d;
+  --color-landing-secondary: #2d5da1;
+  --color-landing-yellow: #fff9c4;
+
+  --shadow-hard: 4px 4px 0px 0px #2d2d2d;
+  --shadow-hard-lg: 8px 8px 0px 0px #2d2d2d;
+  --shadow-hard-sm: 2px 2px 0px 0px #2d2d2d;
+  --shadow-subtle: 3px 3px 0px 0px rgba(45, 45, 45, 0.1);
+}
+
+@layer utilities {
+  .radius-wobbly {
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+  }
+  .radius-wobbly-md {
+    border-radius: 95% 4% 92% 5% / 4% 95% 6% 95%;
+  }
+  .bg-paper {
+    background-image: radial-gradient(var(--color-landing-muted) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+}
