@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect, useRef, useTransition } from "react"
+import './landing/landing.css'
 import Link from "next/link"
 import { Slider } from "@/components/ui/slider"
 import {
@@ -47,6 +48,7 @@ import {
   Tag,
   ChevronDown,
   ArrowLeft,
+  AlertCircle,
   ArrowRight,
   ClipboardCheck,
   Target,
@@ -874,19 +876,18 @@ export default function RescomDashboard() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FAF8F1]">
-        <div className="w-8 h-8 border-3 border-[#3db87a] border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-paper bg-landing-bg">
+        <div className="w-8 h-8 border-4 border-landing-accent border-t-transparent radius-wobbly animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F1] text-[#1A1A1A] font-sans antialiased overflow-x-clip relative select-none">
+    <div className="min-h-screen bg-landing-bg bg-paper text-landing-fg font-patrick antialiased overflow-x-clip relative select-none selection:bg-landing-yellow selection:text-landing-fg">
 
-      {/* 15. Skip-to-content accessibility link */}
       <a
         href="#survey-grid-region"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[999] focus:bg-[#3db87a] focus:text-white focus:px-5 focus:py-3 focus:rounded-full focus:shadow-xl focus:outline-none focus:ring-4 focus:ring-green-200"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[999] focus:bg-landing-accent focus:text-white focus:px-5 focus:py-3 radius-wobbly shadow-hard focus:outline-none"
       >
         Bỏ qua, đến danh sách khảo sát
       </a>
@@ -894,27 +895,22 @@ export default function RescomDashboard() {
       {/* Styled webkit scrollbar injection */}
       <style>{`
         ::-webkit-scrollbar {
-          width: 8px;
+          width: 10px;
         }
         ::-webkit-scrollbar-track {
           background: transparent;
         }
         ::-webkit-scrollbar-thumb {
-          background: #C7D2C9;
-          border-radius: 4px;
+          background: #2d2d2d;
+          border: 2px solid #fdfbf7;
+          border-radius: 8px;
         }
         ::-webkit-scrollbar-thumb:hover {
-          background: #3db87a;
+          background: #ff4d4d;
         }
         @keyframes float-points {
-          0% {
-            transform: translateY(0) scale(1);
-            opacity: 1;
-          }
-          100% {
-            transform: translateY(-120px) scale(1.4);
-            opacity: 0;
-          }
+          0% { transform: translateY(0) scale(1) rotate(-5deg); opacity: 1; }
+          100% { transform: translateY(-120px) scale(1.4) rotate(5deg); opacity: 0; }
         }
         .animate-float-points {
           animation: float-points 1.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
@@ -924,10 +920,10 @@ export default function RescomDashboard() {
       {/* Custom Floating Reward Animation */}
       {floatingReward && (
         <div
-          className="fixed z-[9999] pointer-events-none font-bold text-3xl text-green-600 drop-shadow-lg flex items-center gap-1.5 animate-float-points"
+          className="fixed z-[9999] pointer-events-none font-bold font-kalam text-4xl text-landing-accent drop-shadow-[2px_2px_0px_#2d2d2d] flex items-center gap-1.5 animate-float-points"
           style={{ left: floatingReward.x - 20, top: floatingReward.y - 20 }}
         >
-          <Award className="w-8 h-8 text-green-600 fill-green-100" />
+          <Award className="w-10 h-10 text-landing-yellow fill-landing-yellow drop-shadow-[2px_2px_0px_#2d2d2d]" />
           <span>+{floatingReward.amount}đ</span>
         </div>
       )}
@@ -937,19 +933,19 @@ export default function RescomDashboard() {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className="p-4 rounded-2xl shadow-xl bg-white border border-[#E5E7EB] pointer-events-auto transition-all duration-300 flex items-start gap-3 animate-slide-in"
+            className={`p-4 radius-wobbly shadow-hard border-[3px] border-landing-border pointer-events-auto transition-all duration-300 flex items-start gap-3 animate-fade-scale-in rotate-1 ${toast.type === 'success' ? 'bg-landing-yellow' : 'bg-white'}`}
           >
-            <div className="w-8 h-8 rounded-full bg-[#E8F3EC] flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Sparkles className="w-4 h-4 text-[#3db87a]" />
+            <div className="w-8 h-8 rounded-full bg-white/50 border-2 border-landing-border flex items-center justify-center flex-shrink-0 mt-0.5">
+              <Sparkles className="w-4 h-4 text-landing-fg" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-[#1A1A1A]">{toast.text}</p>
+              <p className="text-lg font-bold text-landing-fg">{toast.text}</p>
             </div>
             <button
               onClick={() => setToasts((prev) => prev.filter((t) => t.id !== toast.id))}
-              className="text-[#6B7280] hover:text-[#1A1A1A] transition-colors"
+              className="text-landing-fg/60 hover:text-landing-accent transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         ))}
@@ -957,43 +953,43 @@ export default function RescomDashboard() {
 
       {/* 2. LEFT SIDEBAR (Desktop / Collapsed Tablet) */}
       <aside
-        className={`fixed left-0 top-0 h-screen z-50 bg-white border-r border-gray-100 shadow-sm flex flex-col transition-all duration-300 w-[256px] ${isSidebarMobileOpen ? "translate-x-0" : "max-md:-translate-x-full"}`}
+        className={`fixed left-0 top-0 h-screen z-50 bg-white border-r-[3px] border-landing-border flex flex-col transition-all duration-300 w-[256px] shadow-[4px_0_0_0_#2d2d2d] ${isSidebarMobileOpen ? "translate-x-0" : "max-md:-translate-x-full"}`}
       >
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-paper">
 
           {/* Top Logo */}
           <div className="px-6 pt-6 pb-3">
             <img
               src="/rescom-logo.png"
               alt="Rescom"
-              className="w-[130px] h-auto object-contain"
+              className="w-[130px] h-auto object-contain -rotate-2"
             />
           </div>
 
           {/* Navigation stack */}
-          <nav className="px-4 space-y-1" aria-label="Menu chính">
+          <nav className="px-4 space-y-3 mt-4" aria-label="Menu chính">
             <button
               onClick={() => {
                 setIsSidebarMobileOpen(false)
                 showToast("Đang ở màn hình Khám Phá", "success")
               }}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all duration-200 bg-[#3db87a] text-white shadow-md shadow-green-200 hover:bg-[#36a86f] active:scale-95"
+              className="w-full flex items-center gap-3 px-4 py-3 radius-wobbly text-lg font-bold transition-all duration-200 bg-landing-accent text-white border-[3px] border-landing-border shadow-hard hover:translate-x-[-2px] hover:translate-y-[-2px] -rotate-1 active:shadow-none active:translate-x-0 active:translate-y-0"
             >
-              <Compass className="w-5 h-5 flex-shrink-0" />
+              <Compass className="w-6 h-6 flex-shrink-0" />
               <span className="flex-1 text-left">Khám Phá</span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" />
             </button>
             {[
-              { label: "Đăng Khảo Sát", icon: <PlusCircle className="w-5 h-5 flex-shrink-0" />, action: () => setShowFABModal(true) },
-              { label: "Tạo Khảo Sát", icon: <FileText className="w-5 h-5 flex-shrink-0" />, href: "/survey-builder" },
-              { label: "Ví Điểm", icon: <Wallet className="w-5 h-5 flex-shrink-0" /> }
+              { label: "Đăng Khảo Sát", icon: <PlusCircle className="w-6 h-6 flex-shrink-0" />, action: () => setShowFABModal(true) },
+              { label: "Tạo Khảo Sát", icon: <FileText className="w-6 h-6 flex-shrink-0" />, href: "/survey-builder" },
+              { label: "Ví Điểm", icon: <Wallet className="w-6 h-6 flex-shrink-0" /> }
             ].map((item) => (
               item.href ? (
                 <Link
                   key={item.label}
                   href={item.href}
                   onClick={() => setIsSidebarMobileOpen(false)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-700 hover:text-[#3db87a] hover:bg-green-50 transition-all duration-200 active:scale-95"
+                  className="w-full flex items-center gap-3 px-4 py-3 radius-wobbly text-lg font-bold text-landing-fg hover:text-landing-accent hover:bg-landing-yellow/30 border-2 border-transparent hover:border-landing-border transition-all duration-200"
                 >
                   {item.icon}
                   <span className="text-left">{item.label}</span>
@@ -1006,7 +1002,7 @@ export default function RescomDashboard() {
                     if (item.action) item.action()
                     else showToast(`Mở tính năng: ${item.label}`, "info")
                   }}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-medium text-gray-700 hover:text-[#3db87a] hover:bg-green-50 transition-all duration-200 active:scale-95"
+                  className="w-full flex items-center gap-3 px-4 py-3 radius-wobbly text-lg font-bold text-landing-fg hover:text-landing-accent hover:bg-landing-yellow/30 border-2 border-transparent hover:border-landing-border transition-all duration-200 rotate-1 hover:-rotate-1"
                 >
                   {item.icon}
                   <span className="text-left">{item.label}</span>
@@ -1016,35 +1012,29 @@ export default function RescomDashboard() {
           </nav>
 
           {/* Mascot section */}
-          <div className="flex-1 px-4 mt-3 min-h-0">
-            <div className="w-full h-full relative overflow-hidden rounded-2xl flex flex-col" style={{ minHeight: "160px" }}>
+          <div className="flex-1 px-4 mt-6 min-h-0">
+            <div className="w-full h-full relative overflow-hidden radius-wobbly border-2 border-landing-border bg-white flex flex-col -rotate-1 shadow-hard-sm" style={{ minHeight: "160px" }}>
               {/* Mascot */}
               <div className="flex-1 flex justify-center items-end relative z-10 pt-4">
                 <img
                   src="/Artboard 1.png"
                   alt="Mascot"
-                  style={{ width: 148, height: 148, objectFit: "contain", marginBottom: "20px", filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.15))" }}
-                  className="animate-bounce"
+                  style={{ width: 148, height: 148, objectFit: "contain", marginBottom: "20px", filter: "drop-shadow(4px 4px 0px rgba(45,45,45,0.2))" }}
+                  className="animate-bounce-subtle"
                 />
               </div>
-              {/* Green hills */}
-              <div className="absolute bottom-0 left-0 right-0">
-                <img
-                  src="/background-mascot.png"
-                  alt="Background"
-                  className="w-full h-auto object-cover"
-                />
-              </div>
+              {/* Green hills - replaced with a hand-drawn squiggle ground */}
+              <div className="absolute bottom-0 left-0 right-0 h-10 bg-landing-yellow border-t-2 border-landing-border radius-wobbly opacity-50"></div>
             </div>
           </div>
 
           {/* Bottom user profile & settings */}
-          <div className="border-t border-gray-100 px-4 pt-3 pb-4 space-y-1 mt-3">
+          <div className="border-t-[3px] border-dashed border-landing-border/30 px-4 pt-4 pb-4 space-y-2 mt-4">
             <button
               onClick={() => showToast("Mở trang cá nhân", "info")}
-              className="w-full flex items-center gap-3 px-3 py-3 rounded-2xl hover:bg-gray-50 transition-colors group"
+              className="w-full flex items-center gap-3 px-3 py-3 radius-wobbly hover:bg-white border-2 border-transparent hover:border-landing-border hover:shadow-hard-sm transition-all group"
             >
-              <div className="w-10 h-10 rounded-full border-2 border-gray-200 overflow-hidden flex-shrink-0 bg-green-50">
+              <div className="w-12 h-12 radius-wobbly border-2 border-landing-border overflow-hidden flex-shrink-0 bg-landing-yellow">
                 <img
                   src="https://api.dicebear.com/7.x/avataaars/svg?seed=nguyen"
                   alt="Avatar người dùng"
@@ -1052,17 +1042,17 @@ export default function RescomDashboard() {
                 />
               </div>
               <div className="text-left flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-800 truncate">Nguyễn Văn A</p>
-                <p className="text-xs text-gray-500 truncate">Sinh viên CNTT</p>
+                <p className="text-lg font-bold text-landing-fg truncate font-kalam">Nguyễn Văn A</p>
+                <p className="text-sm text-landing-fg/70 truncate font-bold">Sinh viên CNTT</p>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-400 group-hover:text-gray-600 flex-shrink-0" />
+              <ChevronRight className="w-5 h-5 text-landing-border/40 group-hover:text-landing-accent flex-shrink-0" />
             </button>
             <button
               onClick={() => showToast("Mở cài đặt tài khoản", "info")}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center gap-3 px-3 py-2 radius-wobbly text-lg text-landing-fg/70 hover:text-landing-fg hover:bg-white border-2 border-transparent hover:border-landing-border transition-all"
             >
               <Settings className="w-5 h-5 flex-shrink-0" />
-              <span className="font-medium">Cài đặt tài khoản</span>
+              <span className="font-bold">Cài đặt tài khoản</span>
             </button>
           </div>
         </div>
@@ -1072,7 +1062,7 @@ export default function RescomDashboard() {
       {isSidebarMobileOpen && (
         <div
           onClick={() => setIsSidebarMobileOpen(false)}
-          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm md:hidden"
+          className="fixed inset-0 z-40 bg-landing-fg/20 backdrop-blur-[2px] md:hidden"
         ></div>
       )}
 
@@ -1080,31 +1070,31 @@ export default function RescomDashboard() {
       <main className="transition-all duration-300 md:ml-[256px] min-h-screen flex flex-col">
 
         {/* Mobile Header Bar (<768px sticky) */}
-        <header className="sticky top-0 z-40 bg-[#FEFCF7] border-b border-[#E5E7EB] md:hidden">
+        <header className="sticky top-0 z-40 bg-white border-b-[3px] border-landing-border shadow-[0_4px_0_0_#2d2d2d] md:hidden">
           {/* Row 1: Nav + Logo | Actions */}
-          <div className="px-4 py-3 flex items-center justify-between">
+          <div className="px-4 py-3 flex items-center justify-between bg-paper">
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setIsSidebarMobileOpen(true)}
-                className="p-1.5 rounded-lg hover:bg-gray-100 text-[#3db87a] focus:outline-none"
+                className="p-2 radius-wobbly border-2 border-landing-border bg-white shadow-hard-sm hover:translate-y-[-2px] focus:outline-none"
                 aria-label="Mở menu điều hướng"
               >
                 <SlidersHorizontal className="w-6 h-6 rotate-90" />
               </button>
-              <img src="/rescom-logo.png" alt="Rescom" className="h-7 w-auto object-contain" />
+              <img src="/rescom-logo.png" alt="Rescom" className="h-8 w-auto object-contain -rotate-2" />
             </div>
             <div className="flex items-center gap-3">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="relative p-2 rounded-full hover:bg-gray-100 text-[#1A1A1A] focus:outline-none"
+                className="relative p-2 radius-wobbly border-2 border-landing-border bg-white shadow-hard-sm hover:bg-landing-yellow focus:outline-none transition-colors"
                 aria-label="Thông báo"
               >
-                <Bell className="w-5.5 h-5.5" />
+                <Bell className="w-6 h-6" />
                 {notifications.some((n) => n.unread) && (
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#DC2626] rounded-full border border-white animate-ping"></span>
+                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-landing-accent radius-wobbly border-2 border-landing-border animate-ping"></span>
                 )}
               </button>
-              <div className="w-8 h-8 rounded-full border border-green-200 overflow-hidden bg-green-50">
+              <div className="w-10 h-10 radius-wobbly border-2 border-landing-border overflow-hidden bg-landing-yellow shadow-hard-sm">
                 <img
                   src="https://api.dicebear.com/7.x/avataaars/svg?seed=nguyen"
                   alt="Avatar"
@@ -1116,247 +1106,209 @@ export default function RescomDashboard() {
           {/* Row 2: Compact stats toggle */}
           <button
             onClick={() => setIsStatsBarCollapsed(prev => !prev)}
-            className="w-full flex items-center justify-between px-4 py-2 border-t border-[#E5E7EB]/60 hover:bg-gray-50/80 transition-colors"
+            className="w-full flex items-center justify-between px-4 py-3 bg-white border-t-[3px] border-dashed border-landing-border/30 transition-colors"
             aria-expanded={!isStatsBarCollapsed}
             aria-label={isStatsBarCollapsed ? "Mở rộng thống kê" : "Thu gọn thống kê"}
           >
-            <div className="flex items-center gap-2 text-xs font-semibold">
-              <Wallet className="w-3.5 h-3.5 text-[#3db87a]" />
-              <span className="text-[#1A1A1A]">{balance.toLocaleString("vi-VN")}đ</span>
-              <span className="text-[#D1D5DB] mx-0.5">•</span>
-              <CheckCircle className="w-3.5 h-3.5 text-green-600" />
-              <span className="text-[#6B7280]">{completedCount} KS</span>
-              <span className="text-[#D1D5DB] mx-0.5">•</span>
-              <TrendingUp className="w-3.5 h-3.5 text-[#F59E0B]" />
-              <span className="text-green-600">+{weeklyPoints}đ</span>
+            <div className="flex items-center gap-2 text-sm font-bold">
+              <Wallet className="w-4 h-4 text-landing-accent" />
+              <span className="text-landing-fg">{balance.toLocaleString("vi-VN")}đ</span>
+              <span className="text-landing-border/30 mx-1">•</span>
+              <CheckCircle className="w-4 h-4 text-landing-secondary" />
+              <span className="text-landing-fg/70">{completedCount} KS</span>
+              <span className="text-landing-border/30 mx-1">•</span>
+              <TrendingUp className="w-4 h-4 text-landing-yellow" />
+              <span className="text-landing-secondary">+{weeklyPoints}đ</span>
             </div>
-            <ChevronRight className={`w-4 h-4 text-[#3db87a] transition-transform duration-300 ${isStatsBarCollapsed ? "" : "rotate-90"}`} />
+            <ChevronRight className={`w-5 h-5 text-landing-border transition-transform duration-300 ${isStatsBarCollapsed ? "" : "rotate-90"}`} />
           </button>
         </header>
 
         {/* 3. STICKY HEADER REGION (Solid Solid Background) */}
         <div
-          className={`sticky md:top-0 top-[88px] z-30 bg-[#FAF8F1] transition-all duration-200 ${scrolled ? "shadow-md border-b border-[#E5E7EB]/50" : "shadow-none"
+          className={`sticky md:top-0 top-[88px] z-30 bg-transparent transition-all duration-200 ${scrolled ? "backdrop-blur-md bg-paper/80 border-b-[3px] border-landing-border shadow-[0_4px_0_0_#2d2d2d]" : ""
             }`}
           style={{ willChange: "transform" }}
         >
           {/* Wrapper with padding */}
-          <div className="px-4 py-4 md:px-8 md:py-6 space-y-4">
+          <div className="px-4 py-4 md:px-8 md:py-6 space-y-6">
 
             {/* 3A. STATS BAR CARD */}
-            <div className={`${isStatsBarCollapsed ? "hidden md:block" : ""} bg-white rounded-2xl shadow-sm border border-[#E5E7EB]`}>
-              <div className="flex flex-col md:flex-row items-stretch justify-between p-4 md:p-5">
-                <div className="flex flex-col sm:flex-row flex-1 divide-y sm:divide-y-0 sm:divide-x divide-[#E5E7EB]">
+            <div className={`${isStatsBarCollapsed ? "hidden md:block" : ""} relative z-50`}>
+              {/* We replace the plain div with a HandCard with tape */}
+              <div className="bg-white border-[3px] border-landing-border radius-wobbly shadow-hard p-4 md:p-6 relative rotate-1">
+                {/* Tape decoration */}
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-24 h-6 bg-gray-400/30 backdrop-blur-sm -rotate-2 skew-x-12 mix-blend-multiply z-10" />
 
-                  {/* Stats Block 1 - Ví điểm */}
-                  <div className="flex items-center gap-4 py-2 sm:py-0 sm:px-5 first:pl-0 flex-1">
-                    <div className="rounded-xl bg-[#E8F3EC] flex items-center justify-center flex-shrink-0 w-12 h-12">
-                      <Wallet className="text-[#3db87a] w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-[#6B7280] font-bold uppercase tracking-wider">Ví điểm:</p>
-                      <div className="flex items-baseline gap-1">
-                        <span className="font-bold tabular-nums text-[#1A1A1A] text-2xl">
-                          {balance.toLocaleString("vi-VN")}
-                        </span>
-                        <span className="text-xs font-semibold text-[#6B7280]">đ</span>
+                <div className="flex flex-col md:flex-row items-stretch justify-between">
+                  <div className="flex flex-col sm:flex-row flex-1 divide-y-[3px] divide-dashed divide-landing-border/30 sm:divide-y-0 sm:divide-x-[3px]">
+
+                    {/* Stats Block 1 - Ví điểm */}
+                    <div className="flex items-center gap-4 py-3 sm:py-0 sm:px-6 first:pl-0 flex-1 group">
+                      <div className="radius-wobbly bg-landing-yellow/30 border-2 border-landing-border flex items-center justify-center flex-shrink-0 w-14 h-14 group-hover:-rotate-6 transition-transform">
+                        <Wallet className="text-landing-fg w-7 h-7" />
                       </div>
-                      <p className="text-xs text-[#3db87a] font-semibold overflow-hidden h-4 mt-0.5">
-                        {lockedBalance.toLocaleString("vi-VN")} đ ký quỹ
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Stats Block 2 - Hoàn thành */}
-                  <div className="flex items-center gap-4 py-2 sm:py-0 sm:px-5 flex-1">
-                    <div className="rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0 w-12 h-12">
-                      <CheckCircle className="text-green-600 w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-[#6B7280] font-bold uppercase tracking-wider">Hoàn thành:</p>
-                      <div className="flex items-baseline gap-1">
-                        <span className="font-bold tabular-nums text-[#1A1A1A] text-2xl">
-                          {completedCount}
-                        </span>
-                        <span className="text-xs font-semibold text-[#6B7280]">khảo sát</span>
+                      <div>
+                        <p className="text-sm text-landing-fg/60 font-bold uppercase tracking-wider font-kalam">Ví điểm</p>
+                        <div className="flex items-baseline gap-1">
+                          <span className="font-bold tabular-nums text-landing-fg text-3xl font-kalam">
+                            {balance.toLocaleString("vi-VN")}
+                          </span>
+                          <span className="text-lg font-bold text-landing-fg/80">đ</span>
+                        </div>
+                        <p className="text-sm text-landing-accent font-bold mt-0.5 -rotate-1">
+                          {lockedBalance.toLocaleString("vi-VN")} đ ký quỹ
+                        </p>
                       </div>
                     </div>
-                  </div>
 
-                  {/* Stats Block 3 - Tuần này */}
-                  <div className="flex items-center gap-4 py-2 sm:py-0 sm:px-5 flex-1">
-                    <div className="rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0 w-12 h-12">
-                      <TrendingUp className="text-[#F59E0B] w-6 h-6" />
-                    </div>
-                    <div>
-                      <p className="text-[11px] text-[#6B7280] font-bold uppercase tracking-wider">Tuần này:</p>
-                      <div className="flex items-baseline gap-1">
-                        <span className="font-bold tabular-nums text-green-600 text-2xl">
-                          +{weeklyPoints}
-                        </span>
-                        <span className="text-xs font-semibold text-green-600">đ</span>
+                    {/* Stats Block 2 - Hoàn thành */}
+                    <div className="flex items-center gap-4 py-3 sm:py-0 sm:px-6 flex-1 group">
+                      <div className="radius-wobbly bg-landing-secondary/20 border-2 border-landing-border flex items-center justify-center flex-shrink-0 w-14 h-14 group-hover:rotate-6 transition-transform">
+                        <CheckCircle className="text-landing-secondary w-7 h-7" />
                       </div>
-                      <p className="text-xs text-[#6B7280] font-semibold overflow-hidden h-4 mt-0.5">
-                        đã tích lũy
-                      </p>
+                      <div>
+                        <p className="text-sm text-landing-fg/60 font-bold uppercase tracking-wider font-kalam">Hoàn thành</p>
+                        <div className="flex items-baseline gap-1">
+                          <span className="font-bold tabular-nums text-landing-fg text-3xl font-kalam">
+                            {completedCount}
+                          </span>
+                          <span className="text-lg font-bold text-landing-fg/80">khảo sát</span>
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Stats Block 3 - Tuần này */}
+                    <div className="flex items-center gap-4 py-3 sm:py-0 sm:px-6 flex-1 group">
+                      <div className="radius-wobbly bg-[#ffcc00]/30 border-2 border-landing-border flex items-center justify-center flex-shrink-0 w-14 h-14 group-hover:-rotate-3 transition-transform">
+                        <TrendingUp className="text-landing-fg w-7 h-7" />
+                      </div>
+                      <div>
+                        <p className="text-sm text-landing-fg/60 font-bold uppercase tracking-wider font-kalam">Tuần này</p>
+                        <div className="flex items-baseline gap-1">
+                          <span className="font-bold tabular-nums text-landing-secondary text-3xl font-kalam">
+                            +{weeklyPoints}
+                          </span>
+                          <span className="text-lg font-bold text-landing-secondary">đ</span>
+                        </div>
+                        <p className="text-sm text-landing-fg/60 font-bold mt-0.5 rotate-1">
+                          đã tích lũy
+                        </p>
+                      </div>
+                    </div>
+
                   </div>
 
-                </div>
-
-                {/* Far right - profile bell indicator for desktop only */}
-                <div className="hidden md:flex items-center gap-4 pl-5 border-l border-[#E5E7EB]">
-                  <div className="relative z-[9999]" ref={notificationRef}>
-                    <button
-                      ref={bellDesktopRef}
-                      onClick={() => setShowNotifications(!showNotifications)}
-                      className="relative p-2.5 rounded-xl border border-[#E5E7EB] hover:bg-[#E8F3EC] text-[#1A1A1A] hover:text-[#3db87a] transition-all focus:ring-2 focus:ring-[#3db87a]"
-                      aria-haspopup="true"
-                      aria-expanded={showNotifications}
-                      aria-label="Thông báo"
-                    >
-                      <Bell className="w-5.5 h-5.5" />
-                      {notifications.some((n) => n.unread) && (
-                        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#DC2626] rounded-full border border-white animate-pulse"></span>
-                      )}
-                    </button>
-
-                    {/* 7. NOTIFICATION PANEL DROPDOWN */}
-                    {showNotifications && (
-                      <div
-                        className="fixed w-80 bg-white border border-[#E5E7EB] rounded-2xl shadow-xl z-[9999] overflow-hidden animate-fade-in"
-                        style={{
-                          top: bellDesktopRef.current
-                            ? bellDesktopRef.current.getBoundingClientRect().bottom + 12
-                            : 100,
-                          right: bellDesktopRef.current
-                            ? window.innerWidth - bellDesktopRef.current.getBoundingClientRect().right
-                            : 24,
-                        }}
+                  {/* Far right - profile bell indicator for desktop only */}
+                  <div className="hidden md:flex items-center gap-4 pl-6 border-l-[3px] border-dashed border-landing-border/30">
+                    <div className="relative z-[9999]" ref={notificationRef}>
+                      <button
+                        ref={bellDesktopRef}
+                        onClick={() => setShowNotifications(!showNotifications)}
+                        className="relative p-3 radius-wobbly border-[3px] border-landing-border bg-white hover:bg-landing-yellow text-landing-fg hover:-translate-y-1 shadow-hard-sm transition-all focus:outline-none"
+                        aria-haspopup="true"
+                        aria-expanded={showNotifications}
+                        aria-label="Thông báo"
                       >
-                        <div className="p-4 bg-[#FEFCF7] border-b border-[#E5E7EB] flex items-center justify-between">
-                          <span className="font-bold text-sm text-[#1A1A1A]">Thông báo</span>
-                          <button
-                            onClick={handleMarkAllNotificationsRead}
-                            className="text-xs font-semibold text-[#3db87a] hover:underline"
-                          >
-                            Đánh dấu đã đọc tất cả
-                          </button>
-                        </div>
+                        <Bell className="w-7 h-7" />
+                        {notifications.some((n) => n.unread) && (
+                          <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-landing-accent radius-wobbly border-2 border-landing-border animate-bounce-subtle"></span>
+                        )}
+                      </button>
 
-                        <div className="max-h-[300px] overflow-y-auto divide-y divide-[#E5E7EB]">
-                          {notifications.length === 0 ? (
-                            <div className="p-8 text-center text-xs text-[#6B7280]">Chưa có thông báo nào</div>
-                          ) : (
-                            notifications.map((notif) => (
-                              <div
-                                key={notif.id}
-                                className={`p-3.5 flex items-start gap-3 hover:bg-[#FAF8F1] transition-colors ${notif.unread ? "bg-[#E8F3EC]/30" : ""
-                                  }`}
-                              >
-                                <div className="mt-0.5 w-2.5 h-2.5 flex-shrink-0 rounded-full flex items-center justify-center">
-                                  {notif.unread && <span className="w-2 h-2 bg-[#3db87a] rounded-full"></span>}
-                                </div>
-                                <div className="flex-1 space-y-0.5">
-                                  <p className="text-xs font-bold text-[#1A1A1A]">{notif.title}</p>
-                                  <p className="text-[11px] text-[#6B7280] leading-snug">{notif.description}</p>
-                                  <p className="text-[9px] text-[#6B7280] font-medium pt-1">{notif.timeAgo}</p>
-                                </div>
-                              </div>
-                            ))
-                          )}
-                        </div>
+                      {/* 7. NOTIFICATION PANEL DROPDOWN */}
+                      {showNotifications && (
+                        <div
+                          className="fixed w-80 bg-white border-[3px] border-landing-border radius-wobbly shadow-hard z-[9999] overflow-hidden animate-fade-scale-in"
+                          style={{
+                            top: bellDesktopRef.current
+                              ? bellDesktopRef.current.getBoundingClientRect().bottom + 16
+                              : 100,
+                            right: bellDesktopRef.current
+                              ? window.innerWidth - bellDesktopRef.current.getBoundingClientRect().right
+                              : 24,
+                          }}
+                        >
+                          <div className="p-4 bg-landing-yellow/20 border-b-[3px] border-dashed border-landing-border flex items-center justify-between">
+                            <span className="font-bold text-xl font-kalam text-landing-fg">Thông báo</span>
+                            <button
+                              onClick={handleMarkAllNotificationsRead}
+                              className="text-sm font-bold text-landing-secondary hover:line-through decoration-2"
+                            >
+                              Đánh dấu đã đọc
+                            </button>
+                          </div>
 
-                        <div className="p-3 bg-[#FEFCF7] border-t border-[#E5E7EB] text-center">
-                          <button
-                            onClick={() => {
-                              showToast("Chuyển tới tất cả thông báo", "info")
-                              setShowNotifications(false)
-                            }}
-                            className="text-xs font-bold text-[#3db87a] hover:underline"
-                          >
-                            Xem tất cả thông báo
-                          </button>
+                          <div className="max-h-[300px] overflow-y-auto divide-y-[3px] divide-dashed divide-landing-border/20 custom-scrollbar">
+                            {notifications.length === 0 ? (
+                              <div className="p-8 text-center text-lg text-landing-fg/60 font-bold">Chưa có thông báo nào</div>
+                            ) : (
+                              notifications.map((notif) => (
+                                <div
+                                  key={notif.id}
+                                  className={`p-4 flex items-start gap-3 hover:bg-landing-yellow/10 transition-colors ${notif.unread ? "bg-landing-accent/10" : ""
+                                    }`}
+                                >
+                                  <div className="mt-1 w-3 h-3 flex-shrink-0 radius-wobbly flex items-center justify-center border-2 border-landing-border bg-white">
+                                    {notif.unread && <span className="w-1.5 h-1.5 bg-landing-accent radius-wobbly"></span>}
+                                  </div>
+                                  <div className="flex-1 space-y-1">
+                                    <p className="text-lg font-bold text-landing-fg leading-tight">{notif.title}</p>
+                                    <p className="text-sm text-landing-fg/70 leading-snug font-bold">{notif.description}</p>
+                                    <p className="text-xs text-landing-fg/50 font-bold pt-1">{notif.timeAgo}</p>
+                                  </div>
+                                </div>
+                              ))
+                            )}
+                          </div>
+
+                          <div className="p-3 bg-white border-t-[3px] border-dashed border-landing-border text-center">
+                            <button
+                              onClick={() => {
+                                showToast("Chuyển tới tất cả thông báo", "info")
+                                setShowNotifications(false)
+                              }}
+                              className="text-lg font-bold text-landing-secondary hover:line-through decoration-2"
+                            >
+                              Xem tất cả thông báo
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    )}
+                      )}
+                    </div>
                   </div>
-                </div>
 
+                </div>
               </div>
             </div>
 
-            {/* STARTER MISSION BANNER - Complete 1 survey to earn 100 bonus points */}
-            {/* {showStarterBanner && !starterMissionDone && (
-              <div className="bg-[#FFF8E1] border border-[#FFE082] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                <div className="flex items-start sm:items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-[#FFF3C4] flex items-center justify-center flex-shrink-0 text-3xl">
-                    🏆
-                  </div>
-                  <div className="space-y-1.5 flex-1">
-                    <p className="text-sm font-bold text-[#5D4037]">
-                      Bạn đã hoàn thành 0/1 nhiệm vụ 🎉
-                    </p>
-                    <p className="text-xs text-[#795548]">
-                      Hoàn thành thêm 1 khảo sát bất kỳ để nhận{" "}
-                      <span className="font-bold text-[#E65100]">100 điểm</span> khởi đầu
-                    </p>
-                    <div className="flex items-center gap-3">
-                      <div className="w-40 h-2.5 rounded-full bg-white/80 overflow-hidden border border-[#FFE082]">
-                        <div
-                          className="h-full bg-gradient-to-r from-[#FF9800] to-[#F57C00] rounded-full transition-all duration-500"
-                          style={{ width: '0%' }}
-                        />
-                      </div>
-                      <span className="text-xs font-bold text-[#5D4037]">0/1</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 self-end sm:self-center">
-                  <button
-                    onClick={() => {
-                      const el = document.getElementById('survey-grid-region')
-                      if (el) el.scrollIntoView({ behavior: 'smooth' })
-                    }}
-                    className="px-5 py-2 text-sm font-bold bg-[#F57C00] text-white rounded-full hover:bg-[#E65100] transition-colors shadow-sm hover:shadow-md active:scale-95"
-                  >
-                    Làm khảo sát
-                  </button>
-                  <button
-                    onClick={() => setShowStarterBanner(false)}
-                    className="p-1.5 rounded-full text-[#795548] hover:bg-[#FFE082]/60 transition-colors"
-                    aria-label="Đóng biểu ngữ"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            )} */}
-
             {/* 3B. FROZEN CREDIT BANNER (CONDITIONAL) */}
             {showFrozenBanner && frozenCount < 3 && (
-              <div className="bg-[#FEF3C7] border border-[#FCD34D] rounded-2xl p-4 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 animate-bounce-subtle">
-                <div className="flex items-start sm:items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#F59E0B]/20 flex items-center justify-center flex-shrink-0 text-[#D97706]">
-                    <Lock className="w-5 h-5" />
+              <div className="bg-[#fff9c4] border-[3px] border-landing-border radius-wobbly shadow-hard p-5 md:p-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-6 animate-bounce-subtle rotate-[-1deg] relative">
+                {/* Tack decoration */}
+                <div className="absolute top-2 left-1/2 -translate-x-1/2 -mt-4 w-6 h-6 rounded-full bg-landing-accent shadow-[2px_4px_0_rgba(0,0,0,0.3)] z-10 before:content-[''] before:absolute before:top-1 before:left-1 before:w-2 before:h-2 before:bg-white/40 before:rounded-full" />
+
+                <div className="flex items-start sm:items-center gap-4 pt-2">
+                  <div className="w-12 h-12 radius-wobbly border-[3px] border-landing-border bg-white flex items-center justify-center flex-shrink-0 text-landing-fg rotate-3">
+                    <Lock className="w-6 h-6" />
                   </div>
-                  <div className="space-y-1">
-                    <p className="text-xs font-bold text-[#92400E]">
+                  <div className="space-y-2">
+                    <p className="text-xl font-bold font-kalam text-landing-fg">
                       Nhiệm vụ: Hoàn thành {frozenCount}/3 khảo sát để mở khóa 50đ ký quỹ!
                     </p>
-                    {/* Progress Bar */}
-                    <div className="flex items-center gap-2">
-                      <div className="w-36 h-2 rounded-full bg-white/70 overflow-hidden border border-[#FCD34D]">
+                    {/* Progress Bar sketched */}
+                    <div className="flex items-center gap-3">
+                      <div className="w-48 h-3 radius-wobbly bg-white border-2 border-landing-border overflow-hidden">
                         <div
-                          className="h-full bg-[#D97706] rounded-full transition-all duration-500"
+                          className="h-full bg-landing-accent transition-all duration-500 border-r-2 border-landing-border"
                           style={{ width: `${(frozenCount / 3) * 100}%` }}
                         ></div>
                       </div>
-                      <span className="text-[11px] font-bold text-[#92400E]">{frozenCount}/3</span>
+                      <span className="text-lg font-bold text-landing-fg font-kalam">{frozenCount}/3</span>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-3 self-end sm:self-center">
+                <div className="flex items-center gap-4 self-end sm:self-center">
                   <button
                     onClick={() => {
                       // complete simulation quickly
@@ -1373,16 +1325,16 @@ export default function RescomDashboard() {
                         showToast("Đã tiến thêm 1 bước tới mở khóa phần thưởng!", "success")
                       }
                     }}
-                    className="px-3 py-1.5 text-[11px] font-bold bg-[#D97706] text-white rounded-full hover:bg-[#B45309] transition-colors"
+                    className="px-6 py-2 text-lg font-bold bg-landing-accent text-white radius-wobbly border-[3px] border-landing-border shadow-hard hover:translate-y-[-2px] hover:translate-x-[-2px] transition-all -rotate-2"
                   >
                     Làm khảo sát
                   </button>
                   <button
                     onClick={handleDismissFrozenBanner}
-                    className="p-1 rounded-full text-[#92400E] hover:bg-[#FCD34D] transition-colors"
+                    className="p-2 radius-wobbly border-2 border-landing-border bg-white text-landing-fg hover:bg-landing-accent hover:text-white transition-colors rotate-2"
                     aria-label="Đóng biểu ngữ"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-6 h-6" />
                   </button>
                 </div>
               </div>
@@ -1390,21 +1342,21 @@ export default function RescomDashboard() {
 
             {/* Celebrate Toast Banner after Frozen unlocked */}
             {frozenCount === 3 && showFrozenBanner && (
-              <div className="bg-[#D1FAE5] border border-[#6EE7B7] rounded-2xl p-4 flex items-center justify-between animate-confetti-pop">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#10B981]/20 flex items-center justify-center text-[#059669]">
-                    <Unlock className="w-5 h-5" />
+              <div className="bg-landing-yellow/30 border-[3px] border-landing-border radius-wobbly shadow-hard p-5 flex items-center justify-between animate-confetti-pop rotate-1">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 radius-wobbly bg-white border-2 border-landing-border flex items-center justify-center text-landing-accent -rotate-3">
+                    <Unlock className="w-7 h-7" />
                   </div>
                   <div>
-                    <p className="text-xs font-bold text-[#065F46]">🎉 Đã mở khóa 50đ thành công!</p>
-                    <p className="text-[11px] text-[#047857]">Tiền thưởng ký quỹ đã được cộng vào số dư của bạn.</p>
+                    <p className="text-xl font-bold font-kalam text-landing-fg">🎉 Đã mở khóa 50đ thành công!</p>
+                    <p className="text-lg text-landing-fg/80 font-bold">Tiền thưởng ký quỹ đã được cộng vào số dư của bạn.</p>
                   </div>
                 </div>
                 <button
                   onClick={handleDismissFrozenBanner}
-                  className="p-1 rounded-full text-[#065F46] hover:bg-[#6EE7B7] transition-colors"
+                  className="p-2 radius-wobbly border-2 border-landing-border bg-white text-landing-fg hover:bg-landing-accent hover:text-white transition-colors"
                 >
-                  <X className="w-5 h-5" />
+                  <X className="w-6 h-6" />
                 </button>
               </div>
             )}
@@ -1412,80 +1364,80 @@ export default function RescomDashboard() {
             {/* Filter toggle - mobile only */}
             <button
               onClick={() => setIsFiltersCollapsed(prev => !prev)}
-              className="md:hidden w-full flex items-center justify-between py-2 px-0"
+              className="md:hidden w-full flex items-center justify-between py-3 px-4 radius-wobbly border-[3px] border-landing-border bg-white shadow-hard-sm"
               aria-expanded={!isFiltersCollapsed}
               aria-label={isFiltersCollapsed ? "Mở rộng tìm kiếm & bộ lọc" : "Thu gọn tìm kiếm & bộ lọc"}
             >
-              <div className="flex items-center gap-2 text-xs font-semibold text-[#3db87a]">
-                <Search className="w-4 h-4" />
+              <div className="flex items-center gap-2 text-lg font-bold text-landing-fg">
+                <Search className="w-5 h-5" />
                 <span>Tìm kiếm & Bộ lọc</span>
                 {activeFilterCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-[#3db87a] text-white text-[10px] font-bold">{activeFilterCount}</span>
+                  <span className="px-2 py-0.5 radius-wobbly bg-landing-accent text-white border-2 border-landing-border text-sm">{activeFilterCount}</span>
                 )}
                 {debouncedSearch && (
-                  <span className="px-2 py-0.5 rounded-full bg-[#E8F3EC] text-[#3db87a] text-[10px] font-bold">Đang tìm</span>
+                  <span className="px-2 py-0.5 radius-wobbly bg-landing-yellow text-landing-fg border-2 border-landing-border text-sm">Đang tìm</span>
                 )}
               </div>
-              <ChevronRight className={`w-4 h-4 text-[#3db87a] transition-transform duration-300 ${isFiltersCollapsed ? "" : "rotate-90"}`} />
+              <ChevronRight className={`w-5 h-5 text-landing-fg transition-transform duration-300 ${isFiltersCollapsed ? "" : "rotate-90"}`} />
             </button>
             {/* 3C + 3D collapsible - always shown on desktop */}
-            <div className={`${isFiltersCollapsed ? "max-h-0" : "max-h-screen"} md:max-h-screen overflow-hidden transition-[max-height] duration-300 ease-in-out space-y-3`}>
+            <div className={`${isFiltersCollapsed ? "max-h-0" : "max-h-screen"} md:max-h-screen overflow-hidden transition-[max-height] duration-300 ease-in-out space-y-4`}>
               {/* 3C. SECTION HEADER + SEARCH + SORT */}
-              <div className="space-y-3">
+              <div className="space-y-4 relative z-20">
 
                 {/* Row 2 */}
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row gap-4">
 
                   {/* Search Input wrapper */}
-                  <div className="relative flex-1">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280]" />
+                  <div className="relative flex-1 group">
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 text-landing-fg/50 group-focus-within:text-landing-fg transition-colors z-10" />
                     <input
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Tìm khảo sát theo tên, chủ đề, nhãn..."
-                      className="w-full h-11 pl-12 pr-10 text-sm bg-white border border-[#E5E7EB] rounded-full focus:outline-none focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 transition-all font-medium text-[#1A1A1A]"
+                      placeholder="Tìm khảo sát theo tên, chủ đề..."
+                      className="w-full h-14 pl-14 pr-12 text-lg bg-white border-[3px] border-landing-border radius-wobbly focus:outline-none focus:translate-y-[-2px] focus:shadow-hard-sm transition-all font-bold text-landing-fg placeholder:text-landing-fg/40"
                       aria-label="Tìm kiếm khảo sát"
                     />
                     {searchQuery && (
                       <button
                         onClick={() => setSearchQuery("")}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-[#6B7280] hover:text-[#1A1A1A]"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-landing-fg/60 hover:text-landing-accent z-10"
                         aria-label="Xóa văn bản tìm kiếm"
                       >
-                        <X className="w-4.5 h-4.5" />
+                        <X className="w-6 h-6" />
                       </button>
                     )}
                   </div>
                   <div className="relative">
                     <button
                       onClick={() => setShowAdvancedFilters(true)}
-                      className={`flex items-center gap-2 px-4 h-11 rounded-full text-xs font-bold transition-all hover:shadow-md ${activeFilterCount > 0
-                        ? "bg-[#3db87a] text-white"
-                        : "bg-[#E8F3EC] text-[#3db87a] hover:bg-[#C7D2C9]"
+                      className={`flex items-center gap-2 px-6 h-14 radius-wobbly text-lg font-bold border-[3px] border-landing-border transition-all hover:translate-y-[-2px] shadow-hard-sm ${activeFilterCount > 0
+                        ? "bg-landing-accent text-white rotate-1"
+                        : "bg-white text-landing-fg hover:bg-landing-yellow -rotate-1"
                         }`}
                       aria-label="Mở bộ lọc nâng cao"
                     >
-                      <SlidersHorizontal className="w-4 h-4" />
+                      <SlidersHorizontal className="w-5 h-5" />
                       <span>Bộ lọc {activeFilterCount > 0 && `(${activeFilterCount})`}</span>
                     </button>
                   </div>
                   {/* Sort Dropdown */}
-                  <div className="relative" ref={sortDropdownRef}>
+                  <div className="relative z-50" ref={sortDropdownRef}>
                     <button
                       onClick={() => setShowSortDropdown(!showSortDropdown)}
-                      className="w-full sm:w-[200px] h-11 px-4 rounded-full bg-[#E8F3EC] hover:bg-[#C7D2C9]/60 text-[#3db87a] text-xs font-bold flex items-center justify-between border border-[#3db87a]/10 focus:ring-2 focus:ring-[#3db87a] transition-all"
+                      className="w-full sm:w-[220px] h-14 px-5 radius-wobbly bg-white hover:bg-landing-yellow text-landing-fg text-lg font-bold flex items-center justify-between border-[3px] border-landing-border shadow-hard-sm hover:translate-y-[-2px] transition-all rotate-1"
                       aria-label="Sắp xếp khảo sát"
                     >
                       <div className="flex items-center gap-2 truncate">
-                        <ArrowUpDown className="w-4 h-4 flex-shrink-0" />
+                        <ArrowUpDown className="w-5 h-5 flex-shrink-0" />
                         <span className="truncate">Sắp xếp: {sortOption}</span>
                       </div>
-                      <ChevronRight className="w-4 h-4 rotate-90 flex-shrink-0" />
+                      <ChevronRight className="w-5 h-5 rotate-90 flex-shrink-0" />
                     </button>
 
                     {showSortDropdown && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white border border-[#E5E7EB] rounded-2xl shadow-xl z-50 overflow-hidden py-1 animate-fade-in">
+                      <div className="absolute right-0 mt-3 w-56 bg-white border-[3px] border-landing-border radius-wobbly shadow-hard z-[99] overflow-hidden py-2 animate-fade-scale-in rotate-[-1deg]">
                         {[
                           "Mới nhất",
                           "Deadline gần nhất",
@@ -1501,7 +1453,7 @@ export default function RescomDashboard() {
                               setShowSortDropdown(false)
                               showToast(`Đã sắp xếp theo: ${option}`, "info")
                             }}
-                            className={`w-full px-4 py-2.5 text-xs text-left font-medium transition-colors hover:bg-[#FAF8F1] ${sortOption === option ? "text-[#3db87a] bg-[#E8F3EC]/50 font-bold" : "text-[#1A1A1A]"
+                            className={`w-full px-5 py-3 text-lg text-left font-bold transition-colors hover:bg-landing-yellow/30 ${sortOption === option ? "text-landing-accent bg-landing-yellow/10" : "text-landing-fg"
                               }`}
                           >
                             {option}
@@ -1514,33 +1466,36 @@ export default function RescomDashboard() {
                 </div>
 
                 {/* Match response count indicator */}
-                <div className="flex items-center justify-between text-xs text-[#6B7280] px-1">
+                <div className="flex items-center justify-between text-lg text-landing-fg/80 font-bold px-2 relative z-10">
                   <span aria-live="polite">
-                    Tìm thấy <strong className="text-[#1A1A1A] font-bold">{sortedSurveys.length}</strong> khảo sát phù hợp
+                    Tìm thấy <strong className="text-landing-accent font-kalam text-2xl">{sortedSurveys.length}</strong> khảo sát phù hợp
                   </span>
 
                   {/* Ẩn khảo sát đã làm Checkbox */}
-                  <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold text-[#3db87a]">
+                  <label className="flex items-center gap-3 cursor-pointer select-none text-lg font-bold text-landing-fg group">
+                    <div className={`w-6 h-6 radius-wobbly border-[3px] flex items-center justify-center transition-all ${hideCompleted ? 'bg-landing-accent border-landing-accent' : 'bg-white border-landing-border group-hover:bg-landing-yellow'}`}>
+                      {hideCompleted && <Check className="w-4 h-4 text-white stroke-[4]" />}
+                    </div>
                     <input
                       type="checkbox"
                       checked={hideCompleted}
                       onChange={(e) => setHideCompleted(e.target.checked)}
-                      className="rounded border-[#E5E7EB] text-[#3db87a] focus:ring-[#3db87a] w-4 h-4 cursor-pointer"
+                      className="hidden"
                     />
-                    <span>Ẩn khảo sát đã làm</span>
+                    <span className="group-hover:underline decoration-wavy decoration-2 decoration-landing-accent">Ẩn khảo sát đã làm</span>
                   </label>
                 </div>
 
               </div>
 
               {/* 3D. FILTER PILLS ROW */}
-              <div className="flex items-center gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none border-b border-[#E5E7EB]/50 pt-1">
+              <div className="flex items-center gap-3 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none pt-2 relative z-10">
                 {[
                   { id: "Tất cả", label: "Tất cả", icon: null },
-                  { id: "Phù hợp", label: "Phù hợp", icon: <Sparkles className="w-3.5 h-3.5" /> },
-                  { id: "Thưởng cao", label: "Thưởng cực cao", icon: <TrendingUp className="w-3.5 h-3.5" /> },
-                  { id: "Nhanh", label: "Làm siêu nhanh", icon: <Clock className="w-3.5 h-3.5" /> }
-                ].map((pill) => (
+                  { id: "Phù hợp", label: "Phù hợp", icon: <Sparkles className="w-4 h-4" /> },
+                  { id: "Thưởng cao", label: "Thưởng cực cao", icon: <TrendingUp className="w-4 h-4" /> },
+                  { id: "Nhanh", label: "Làm siêu nhanh", icon: <Clock className="w-4 h-4" /> }
+                ].map((pill, i) => (
                   <button
                     key={pill.id}
                     onClick={() => {
@@ -1548,10 +1503,11 @@ export default function RescomDashboard() {
                         setActiveFilter(pill.id as any)
                       })
                     }}
-                    className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all active:scale-95 border ${activeFilter === pill.id
-                      ? "bg-[#3db87a] text-white border-[#3db87a] shadow-sm"
-                      : "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]/10 hover:bg-[#C7D2C9]/60"
+                    className={`flex items-center gap-2 px-5 py-2 radius-wobbly text-lg font-bold whitespace-nowrap transition-all border-[3px] shadow-hard-sm ${activeFilter === pill.id
+                      ? "bg-landing-fg text-white border-landing-fg translate-y-[-2px] translate-x-[-2px]"
+                      : "bg-white text-landing-fg border-landing-border hover:bg-landing-yellow hover:translate-y-[-1px]"
                       }`}
+                    style={{ transform: activeFilter === pill.id ? 'translate(-2px, -2px) rotate(1deg)' : `rotate(${i % 2 === 0 ? '-1deg' : '1deg'})` }}
                   >
                     {pill.icon}
                     <span>{pill.label}</span>
@@ -1566,25 +1522,26 @@ export default function RescomDashboard() {
         {/* 5. SURVEY CARDS GRID (SCROLLABLE REGION) */}
         <section
           id="survey-grid-region"
-          className="flex-1 px-4 py-6 md:px-8 md:py-8"
+          className="flex-1 px-4 py-8 md:px-8 md:py-10 relative z-0"
           aria-live="polite"
         >
           {sortedSurveys.length === 0 ? (
 
             /* 6. EMPTY STATES */
-            <div className="flex flex-col items-center justify-center text-center py-20 px-4 bg-white rounded-3xl border border-[#E5E7EB] shadow-sm max-w-xl mx-auto space-y-6">
-              <div className="w-24 h-24 rounded-full bg-[#FAF8F1] flex items-center justify-center text-[#3db87a]">
-                <BookOpen className="w-12 h-12 stroke-[1.2]" />
+            <div className="flex flex-col items-center justify-center text-center py-24 px-6 bg-white radius-wobbly border-[3px] border-landing-border shadow-hard max-w-xl mx-auto space-y-8 -rotate-1 relative">
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-6 bg-gray-400/30 backdrop-blur-sm rotate-2 skew-x-12 mix-blend-multiply z-10" />
+              <div className="w-32 h-32 radius-wobbly bg-landing-yellow/30 border-2 border-landing-border flex items-center justify-center text-landing-fg rotate-3 shadow-hard-sm">
+                <BookOpen className="w-16 h-16 stroke-[2]" />
               </div>
-              <div className="space-y-2">
-                <h3 className="text-lg font-bold text-[#1A1A1A]">Không tìm thấy khảo sát phù hợp</h3>
-                <p className="text-xs text-[#6B7280] max-w-sm">
+              <div className="space-y-4">
+                <h3 className="text-3xl font-bold font-kalam text-landing-fg">Không tìm thấy khảo sát phù hợp</h3>
+                <p className="text-lg font-bold text-landing-fg/70 max-w-sm mx-auto font-patrick">
                   Thử thay đổi từ khóa tìm kiếm hoặc đặt lại các bộ lọc nâng cao để tiếp tục xem danh sách.
                 </p>
               </div>
               <button
                 onClick={handleClearFilters}
-                className="px-6 py-2.5 rounded-full bg-[#3db87a] text-white text-xs font-bold hover:bg-[#13422C] transition-all"
+                className="px-8 py-3 radius-wobbly border-[3px] border-landing-border bg-landing-accent text-white text-lg font-bold hover:translate-y-[-2px] hover:translate-x-[-2px] shadow-hard transition-all rotate-2"
               >
                 Xem tất cả khảo sát
               </button>
@@ -1592,8 +1549,8 @@ export default function RescomDashboard() {
 
           ) : (
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-              {sortedSurveys.map((survey) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
+              {sortedSurveys.map((survey, i) => {
                 const isNew = survey.createdHoursAgo <= 48
                 const spotsLeft = survey.targetResponses - survey.currentResponses
                 const progressPercent = Math.round((survey.currentResponses / survey.targetResponses) * 100)
@@ -1601,31 +1558,34 @@ export default function RescomDashboard() {
                 // Color tiers for match score badge
                 let matchBadgeStyle = ""
                 if (survey.matchScore >= 90) {
-                  matchBadgeStyle = "bg-[#3db87a] text-white"
+                  matchBadgeStyle = "bg-landing-accent text-white"
                 } else if (survey.matchScore >= 70) {
-                  matchBadgeStyle = "bg-[#3db87a] text-white"
+                  matchBadgeStyle = "bg-landing-accent text-white"
                 } else if (survey.matchScore >= 50) {
-                  matchBadgeStyle = "bg-[#E8F3EC] text-[#3db87a]"
+                  matchBadgeStyle = "bg-landing-yellow text-landing-fg"
                 }
 
                 // Deadline Color Logic
-                let deadlineStyle = "text-[#6B7280]"
+                let deadlineStyle = "text-landing-fg/70"
                 let deadlineUrgent = false
                 if (survey.deadlineDays < 1) {
-                  deadlineStyle = "text-[#DC2626] font-bold animate-pulse"
+                  deadlineStyle = "text-landing-accent font-bold animate-pulse"
                   deadlineUrgent = true
                 } else if (survey.deadlineDays < 3) {
-                  deadlineStyle = "text-[#DC2626] font-bold"
+                  deadlineStyle = "text-landing-accent font-bold"
                 } else if (survey.deadlineDays <= 7) {
-                  deadlineStyle = "text-[#F59E0B] font-semibold"
+                  deadlineStyle = "text-landing-secondary font-bold"
                 }
+
+                // Random rotation per card
+                const rotateClass = i % 3 === 0 ? 'rotate-1' : i % 3 === 1 ? '-rotate-1' : 'rotate-2'
 
                 return (
                   <article
                     key={survey.id}
                     id={`survey-card-${survey.id}`}
                     onClick={(e) => !survey.completed && handleStartSurvey(survey, e)}
-                    className="group relative flex flex-col bg-white rounded-2xl border border-[#E5E7EB] hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden cursor-pointer"
+                    className={`group relative flex flex-col bg-white radius-wobbly border-[3px] border-landing-border shadow-hard hover:translate-y-[-4px] hover:translate-x-[-4px] transition-all duration-300 cursor-pointer ${rotateClass} hover:rotate-0 overflow-hidden`}
                     aria-label={`Khảo sát: ${survey.title}. Phần thưởng: ${survey.pointBounty}đ`}
                     role="button"
                     tabIndex={0}
@@ -1635,33 +1595,37 @@ export default function RescomDashboard() {
                       }
                     }}
                   >
+                    {/* Tape decoration if urgent or new */}
+                    {(isNew || deadlineUrgent) && (
+                      <div className="absolute top-0 right-8 w-16 h-6 bg-red-400/30 backdrop-blur-sm rotate-[35deg] mix-blend-multiply z-20" />
+                    )}
 
                     {/* TOP HALF — Visual hero */}
-                    <div className="h-44 bg-[#F5EFE0] relative flex items-center justify-center p-6 border-b border-[#E5E7EB] transition-colors group-hover:bg-[#efe8d9]">
+                    <div className="h-48 bg-landing-yellow/20 relative flex items-center justify-center p-6 border-b-[3px] border-dashed border-landing-border transition-colors group-hover:bg-landing-yellow/40">
 
                       {/* Match score badge (50%+) */}
                       {survey.matchScore >= 50 && (
                         <div
-                          className={`absolute top-3 left-3 px-3 py-1 rounded-full text-[10px] font-bold flex items-center gap-1 shadow-sm ${matchBadgeStyle}`}
+                          className={`absolute top-4 left-4 px-4 py-1.5 radius-wobbly border-2 border-landing-border text-sm font-bold flex items-center gap-1.5 shadow-hard-sm -rotate-2 ${matchBadgeStyle}`}
                           title="Phù hợp dựa trên ngành học, độ tuổi và sở thích của bạn"
                         >
-                          <Sparkles className="w-3 h-3" />
+                          <Sparkles className="w-4 h-4" />
                           <span>Phù hợp {survey.matchScore}%</span>
                         </div>
                       )}
 
                       {/* "Mới" Ribbon (<48h) */}
                       {isNew && (
-                        <div className="absolute top-0 right-0 bg-[#3db87a] text-white text-[9px] font-extrabold px-3 py-1 rounded-bl-xl uppercase tracking-wider shadow-sm z-10">
+                        <div className="absolute top-0 right-0 bg-landing-accent text-white text-xs font-bold px-4 py-2 border-b-2 border-l-2 border-landing-border radius-wobbly-b-l uppercase tracking-wider shadow-hard-sm z-10 rotate-2">
                           Mới
                         </div>
                       )}
 
                       {/* Center Topic Illustration */}
-                      <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-md transform group-hover:scale-105 transition-transform duration-300 relative">
+                      <div className="w-24 h-24 radius-wobbly bg-white border-[3px] border-landing-border flex items-center justify-center shadow-hard transform group-hover:scale-110 transition-transform duration-300 relative rotate-2">
                         {getTopicIcon(survey.topic)}
                         {/* Semi-transparent reward overlay */}
-                        <div className="absolute -bottom-1 -right-1 bg-[#FEFCF7]/95 border border-[#E5E7EB] px-2 py-0.5 rounded-md text-[10px] font-bold text-[#3db87a] shadow-sm">
+                        <div className="absolute -bottom-3 -right-3 bg-white border-2 border-landing-border px-3 py-1 radius-wobbly text-sm font-bold font-kalam text-landing-accent shadow-hard-sm -rotate-6">
                           +{survey.pointBounty}đ
                         </div>
                       </div>
@@ -1669,30 +1633,27 @@ export default function RescomDashboard() {
                     </div>
 
                     {/* BOTTOM HALF — Info section */}
-                    <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                      <div className="space-y-2">
+                    <div className="p-6 flex-1 flex flex-col justify-between space-y-5">
+                      <div className="space-y-3">
 
                         {/* Header title + bounty pill */}
-                        <div className="flex items-start justify-between gap-3">
-                          <h4 className="font-bold text-sm text-[#1A1A1A] line-clamp-2 leading-snug flex-1">
+                        <div className="flex items-start justify-between gap-4">
+                          <h4 className="font-bold font-kalam text-xl text-landing-fg line-clamp-2 leading-snug flex-1">
                             {highlightText(survey.title, searchQuery)}
                           </h4>
-                          <span className="px-2.5 py-1 rounded-md bg-[#E8F3EC] text-[#3db87a] text-xs font-bold flex-shrink-0">
-                            +{survey.pointBounty}đ
-                          </span>
                         </div>
 
                         {/* Description */}
-                        <p className="text-xs text-[#6B7280] line-clamp-2 leading-relaxed">
+                        <p className="text-sm font-bold text-landing-fg/70 line-clamp-2 leading-relaxed">
                           {highlightText(survey.description, searchQuery)}
                         </p>
 
                         {/* Tag Chips */}
-                        <div className="flex flex-wrap gap-1.5 pt-1">
+                        <div className="flex flex-wrap gap-2 pt-2">
                           {survey.tags.map((tag) => (
                             <span
                               key={tag}
-                              className="px-2.5 py-0.5 bg-[#E8F3EC]/70 text-[#3db87a] text-[10px] font-bold rounded-full border border-[#3db87a]/5"
+                              className="px-3 py-1 bg-white border-2 border-landing-border text-landing-fg text-sm font-bold radius-wobbly shadow-[2px_2px_0_0_#2d2d2d]"
                             >
                               {tag}
                             </span>
@@ -1701,20 +1662,20 @@ export default function RescomDashboard() {
                       </div>
 
                       {/* Progress and Meta Row */}
-                      <div className="space-y-3.5 pt-2 border-t border-[#FAF8F1]">
+                      <div className="space-y-4 pt-3 border-t-[3px] border-dashed border-landing-border/20">
 
                         {/* Meta metrics */}
-                        <div className="flex items-center justify-between text-[11px] text-[#6B7280] font-semibold">
-                          <div className="flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5 text-[#6B7280]" />
+                        <div className="flex items-center justify-between text-sm text-landing-fg/70 font-bold">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-4 h-4 text-landing-fg/50" />
                             <span>~{survey.estimatedTime} phút</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Users className="w-3.5 h-3.5 text-[#6B7280]" />
+                          <div className="flex items-center gap-1.5">
+                            <Users className="w-4 h-4 text-landing-fg/50" />
                             <span>Còn {spotsLeft} suất</span>
                           </div>
-                          <div className="flex items-center gap-1">
-                            <Calendar className="w-3.5 h-3.5 text-[#6B7280]" />
+                          <div className="flex items-center gap-1.5">
+                            <Calendar className="w-4 h-4 text-landing-fg/50" />
                             <span className={deadlineStyle}>
                               {survey.deadlineDays < 1
                                 ? `Hết hạn sau ${Math.round(survey.deadlineDays * 24)}h`
@@ -1724,14 +1685,14 @@ export default function RescomDashboard() {
                         </div>
 
                         {/* Progress slider bar */}
-                        <div className="space-y-1">
-                          <div className="flex justify-between text-[10px] font-bold">
-                            <span className="text-[#6B7280]">Tiến độ thu thập</span>
-                            <span className="text-[#1A1A1A]">{progressPercent}%</span>
+                        <div className="space-y-1.5">
+                          <div className="flex justify-between text-xs font-bold uppercase tracking-wide">
+                            <span className="text-landing-fg/60">Tiến độ thu thập</span>
+                            <span className="text-landing-fg font-kalam text-sm">{progressPercent}%</span>
                           </div>
-                          <div className="w-full h-2 rounded-full bg-gray-100 overflow-hidden border border-[#E5E7EB]/40">
+                          <div className="w-full h-3 radius-wobbly bg-white overflow-hidden border-2 border-landing-border">
                             <div
-                              className="h-full bg-[#3db87a] rounded-full transition-all duration-700 ease-out"
+                              className="h-full bg-landing-accent border-r-2 border-landing-border transition-all duration-700 ease-out"
                               style={{ width: `${progressPercent}%` }}
                             ></div>
                           </div>
@@ -1739,12 +1700,12 @@ export default function RescomDashboard() {
 
                         {/* Call to action button */}
                         <button
-                          className="w-full h-10 rounded-full bg-[#3db87a] hover:bg-[#13422C] text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-sm focus:ring-2 focus:ring-green-700"
+                          className="w-full h-12 radius-wobbly bg-landing-fg hover:bg-landing-accent text-white text-lg font-bold flex items-center justify-center gap-2 transition-all shadow-hard active:translate-y-[2px] active:translate-x-[2px] active:shadow-none focus:outline-none rotate-1 group-hover:rotate-0"
                           aria-label={`Bắt đầu làm bài khảo sát ${survey.title}`}
                         >
-                          <Zap className="w-3.5 h-3.5" />
+                          <Zap className="w-5 h-5 fill-white" />
                           <span>Bắt đầu làm</span>
-                          <ChevronRight className="w-3.5 h-3.5" />
+                          <ChevronRight className="w-5 h-5" />
                         </button>
                       </div>
 
@@ -1752,18 +1713,18 @@ export default function RescomDashboard() {
 
                     {/* COMPLETED CARD STATE OVERLAY */}
                     {survey.completed && (
-                      <div className="absolute inset-0 bg-white/75 backdrop-blur-[1px] flex flex-col items-center justify-center p-6 text-center z-10 transition-all">
-                        <div className="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center text-green-600 mb-3 shadow-md border border-green-200 animate-scale-in">
-                          <Check className="w-8 h-8 stroke-[3]" />
+                      <div className="absolute inset-0 bg-white/80 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 text-center z-30 transition-all">
+                        <div className="w-20 h-20 radius-wobbly bg-landing-yellow border-[3px] border-landing-border flex items-center justify-center text-landing-fg mb-4 shadow-hard animate-scale-in rotate-3">
+                          <Check className="w-10 h-10 stroke-[3]" />
                         </div>
-                        <h5 className="font-bold text-sm text-[#1A1A1A]">Đã hoàn thành khảo sát</h5>
-                        <p className="text-xs text-[#6B7280] mb-5 max-w-[200px]">Phần thưởng điểm đã được cộng vào ví của bạn.</p>
+                        <h5 className="font-bold font-kalam text-2xl text-landing-fg mb-1">Đã hoàn thành</h5>
+                        <p className="text-lg font-bold text-landing-fg/70 mb-6 max-w-[200px]">Phần thưởng điểm đã được cộng vào ví.</p>
 
                         <button
                           disabled
-                          className="w-44 h-9 rounded-full bg-green-100 text-[#3db87a] text-xs font-bold cursor-not-allowed border border-[#3db87a]/10 flex items-center justify-center gap-1.5"
+                          className="w-48 h-12 radius-wobbly bg-landing-muted text-landing-fg/50 text-lg font-bold cursor-not-allowed border-2 border-landing-border flex items-center justify-center gap-2"
                         >
-                          <CheckCircle className="w-3.5 h-3.5" />
+                          <CheckCircle className="w-5 h-5" />
                           <span>Đã nhận thưởng</span>
                         </button>
                       </div>
@@ -1779,17 +1740,17 @@ export default function RescomDashboard() {
       </main>
 
       {/* 8. FLOATING ACTION BUTTON (FAB) */}
-      <div className="fixed bottom-6 right-6 z-40 group">
+      <div className="fixed bottom-8 right-8 z-40 group">
         <button
           onClick={() => setShowFABModal(true)}
-          className="w-14 h-14 rounded-full bg-[#3db87a] hover:bg-[#13422C] text-white flex items-center justify-center shadow-lg shadow-green-900/30 hover:scale-105 active:scale-95 transition-all focus:outline-none focus:ring-4 focus:ring-green-200"
+          className="w-16 h-16 radius-wobbly bg-landing-accent border-[3px] border-landing-border text-white flex items-center justify-center shadow-[4px_4px_0_0_#2d2d2d] hover:translate-y-[-2px] hover:translate-x-[-2px] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all focus:outline-none -rotate-3 hover:rotate-0"
           aria-label="Đăng khảo sát mới"
           title="Đăng khảo sát mới"
         >
-          <Plus className="w-7 h-7 stroke-[2.5]" />
+          <Plus className="w-8 h-8 stroke-[3]" />
         </button>
         {/* Tooltip */}
-        <div className="absolute bottom-16 right-0 bg-[#1A1A1A] text-white text-xs font-semibold py-1.5 px-3 rounded-lg shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none">
+        <div className="absolute bottom-20 right-0 bg-white border-2 border-landing-border radius-wobbly shadow-hard-sm text-landing-fg text-lg font-bold py-2 px-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap pointer-events-none rotate-2">
           Đăng khảo sát mới
         </div>
       </div>
@@ -1801,20 +1762,22 @@ export default function RescomDashboard() {
           {/* Backdrop */}
           <div
             onClick={() => setShowAdvancedFilters(false)}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"
+            className="absolute inset-0 bg-landing-fg/40 backdrop-blur-[2px] transition-opacity"
           ></div>
 
-          <div className="relative w-full max-w-3xl bg-white rounded-2xl shadow-2xl flex flex-col max-h-[95vh] animate-scale-in">
+          <div className="relative w-full max-w-3xl bg-white radius-wobbly border-[3px] border-landing-border shadow-hard flex flex-col max-h-[95vh] animate-scale-in rotate-1">
+            {/* Tape decoration */}
+            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-32 h-8 bg-gray-400/30 backdrop-blur-sm rotate-2 skew-x-12 mix-blend-multiply z-10" />
 
             {/* Header */}
-            <div className="px-6 py-5 border-b border-[#E5E7EB] flex items-center justify-between">
+            <div className="px-8 py-6 border-b-[3px] border-dashed border-landing-border flex items-center justify-between bg-landing-yellow/20">
               <div>
-                <h3 className="text-xl font-bold text-[#1A1A1A]">Bộ lọc nâng cao</h3>
-                <p className="text-sm text-[#6B7280]">Tìm đúng đối tượng khảo sát</p>
+                <h3 className="text-3xl font-bold font-kalam text-landing-fg">Bộ lọc nâng cao</h3>
+                <p className="text-lg font-bold text-landing-fg/70">Tìm đúng đối tượng khảo sát</p>
               </div>
               <button
                 onClick={() => setShowAdvancedFilters(false)}
-                className="p-1 rounded-full text-[#6B7280] hover:bg-[#FAF8F1] transition-colors"
+                className="p-2 radius-wobbly bg-white border-2 border-landing-border text-landing-fg hover:bg-landing-accent hover:text-white transition-colors rotate-3"
                 aria-label="Đóng bảng bộ lọc"
               >
                 <X className="w-6 h-6" />
@@ -1822,12 +1785,12 @@ export default function RescomDashboard() {
             </div>
 
             {/* Scrollable Filters Content */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-8">
+            <div className="flex-1 overflow-y-auto p-8 space-y-10 custom-scrollbar">
 
               {/* 1. ĐỘ TUỔI */}
-              <div className="space-y-3">
-                <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Độ tuổi</span>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="space-y-4">
+                <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Độ tuổi</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {["Dưới 18 tuổi", "18 - 22 tuổi", "23 - 25 tuổi", "Trên 25 tuổi"].map((age) => {
                     const selected = selectedAges.includes(age)
                     return (
@@ -1840,13 +1803,13 @@ export default function RescomDashboard() {
                             setSelectedAges([...selectedAges, age])
                           }
                         }}
-                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
-                          ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
-                          : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                        className={`flex items-center gap-3 px-4 py-3 radius-wobbly text-lg font-bold border-2 transition-all ${selected
+                          ? "bg-landing-yellow text-landing-fg border-landing-border shadow-[2px_2px_0_0_#2d2d2d] translate-y-[-2px]"
+                          : "bg-white text-landing-fg border-landing-border hover:bg-landing-yellow/30"
                           }`}
                       >
-                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
-                          {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                        <div className={`w-5 h-5 radius-wobbly border-2 flex items-center justify-center transition-colors ${selected ? "bg-landing-accent border-landing-accent" : "border-landing-border bg-white"}`}>
+                          {selected && <Check className="w-4 h-4 text-white stroke-[3]" />}
                         </div>
                         <span className="whitespace-nowrap">{age}</span>
                       </button>
@@ -1855,11 +1818,11 @@ export default function RescomDashboard() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                 {/* GIỚI TÍNH */}
-                <div className="space-y-3">
-                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Giới tính</span>
-                  <div className="flex flex-wrap gap-3">
+                <div className="space-y-4">
+                  <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Giới tính</span>
+                  <div className="flex flex-wrap gap-4">
                     {["Nam", "Nữ", "Khác"].map((gender) => {
                       const selected = selectedGenders.includes(gender)
                       return (
@@ -1872,13 +1835,13 @@ export default function RescomDashboard() {
                               setSelectedGenders([...selectedGenders, gender])
                             }
                           }}
-                          className={`flex flex-1 items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
-                            ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
-                            : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                          className={`flex flex-1 items-center justify-center gap-3 px-4 py-3 radius-wobbly text-lg font-bold border-2 transition-all ${selected
+                            ? "bg-landing-yellow text-landing-fg border-landing-border shadow-[2px_2px_0_0_#2d2d2d] translate-y-[-2px]"
+                            : "bg-white text-landing-fg border-landing-border hover:bg-landing-yellow/30"
                             }`}
                         >
-                          <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
-                            {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                          <div className={`w-5 h-5 radius-wobbly border-2 flex items-center justify-center transition-colors ${selected ? "bg-landing-accent border-landing-accent" : "border-landing-border bg-white"}`}>
+                            {selected && <Check className="w-4 h-4 text-white stroke-[3]" />}
                           </div>
                           <span>{gender}</span>
                         </button>
@@ -1888,13 +1851,13 @@ export default function RescomDashboard() {
                 </div>
 
                 {/* KHU VỰC SINH SỐNG */}
-                <div className="space-y-3">
-                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Khu vực sinh sống</span>
-                  <div className="relative">
+                <div className="space-y-4">
+                  <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Khu vực sinh sống</span>
+                  <div className="relative group">
                     <select
                       value={selectedLocation}
                       onChange={(e) => setSelectedLocation(e.target.value)}
-                      className="w-full h-[46px] px-4 appearance-none border border-[#E5E7EB] rounded-xl text-sm font-semibold text-[#1A1A1A] focus:outline-none focus:border-[#3db87a] focus:ring-1 focus:ring-[#3db87a] bg-white transition-all"
+                      className="w-full h-[52px] px-5 appearance-none border-2 border-landing-border radius-wobbly text-lg font-bold text-landing-fg focus:outline-none focus:translate-y-[-2px] focus:shadow-hard-sm bg-white transition-all cursor-pointer"
                     >
                       <option value="">Chọn tỉnh / thành phố</option>
                       <option value="Hà Nội">Hà Nội</option>
@@ -1902,13 +1865,13 @@ export default function RescomDashboard() {
                       <option value="Đà Nẵng">Đà Nẵng</option>
                       <option value="Khác">Khác</option>
                     </select>
-                    <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#6B7280] rotate-90 pointer-events-none" />
+                    <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 w-6 h-6 text-landing-fg rotate-90 pointer-events-none" />
                   </div>
                 </div>
 
                 {/* NGHỀ NGHIỆP */}
-                <div className="space-y-3">
-                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Nghề nghiệp</span>
+                <div className="space-y-4">
+                  <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Nghề nghiệp</span>
                   <div className="flex flex-wrap gap-3">
                     {["Học sinh / Sinh viên", "Nhân viên văn phòng", "Freelancer", "Chủ doanh nghiệp", "Khác"].map((occ) => {
                       const selected = selectedOccupations.includes(occ)
@@ -1922,13 +1885,13 @@ export default function RescomDashboard() {
                               setSelectedOccupations([...selectedOccupations, occ])
                             }
                           }}
-                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
-                            ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
-                            : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                          className={`flex items-center gap-3 px-4 py-2.5 radius-wobbly text-lg font-bold border-2 transition-all ${selected
+                            ? "bg-landing-yellow text-landing-fg border-landing-border shadow-[2px_2px_0_0_#2d2d2d] translate-y-[-2px]"
+                            : "bg-white text-landing-fg border-landing-border hover:bg-landing-yellow/30"
                             }`}
                         >
-                          <div className={`w-4 h-4 flex-shrink-0 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
-                            {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                          <div className={`w-5 h-5 flex-shrink-0 radius-wobbly border-2 flex items-center justify-center transition-colors ${selected ? "bg-landing-accent border-landing-accent" : "border-landing-border bg-white"}`}>
+                            {selected && <Check className="w-4 h-4 text-white stroke-[3]" />}
                           </div>
                           <span>{occ}</span>
                         </button>
@@ -1938,8 +1901,8 @@ export default function RescomDashboard() {
                 </div>
 
                 {/* KHỐI NGÀNH */}
-                <div className="space-y-3">
-                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Khối ngành</span>
+                <div className="space-y-4">
+                  <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Khối ngành</span>
                   <div className="flex flex-wrap gap-3">
                     {["Kinh tế - Marketing", "Truyền thông - Báo chí", "CNTT - Kỹ thuật phần mềm", "Ngôn ngữ - Du lịch", "Khác"].map((major) => {
                       const selected = selectedMajors.includes(major)
@@ -1953,13 +1916,13 @@ export default function RescomDashboard() {
                               setSelectedMajors([...selectedMajors, major])
                             }
                           }}
-                          className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
-                            ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
-                            : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                          className={`flex items-center gap-3 px-4 py-2.5 radius-wobbly text-lg font-bold border-2 transition-all ${selected
+                            ? "bg-landing-yellow text-landing-fg border-landing-border shadow-[2px_2px_0_0_#2d2d2d] translate-y-[-2px]"
+                            : "bg-white text-landing-fg border-landing-border hover:bg-landing-yellow/30"
                             }`}
                         >
-                          <div className={`w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
-                            {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                          <div className={`w-5 h-5 radius-wobbly border-2 flex-shrink-0 flex items-center justify-center transition-colors ${selected ? "bg-landing-accent border-landing-accent" : "border-landing-border bg-white"}`}>
+                            {selected && <Check className="w-4 h-4 text-white stroke-[3]" />}
                           </div>
                           <span>{major}</span>
                         </button>
@@ -1970,12 +1933,12 @@ export default function RescomDashboard() {
               </div>
 
               {/* THU NHẬP HÀNG THÁNG */}
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Thu nhập hàng tháng</span>
-                  <span className="text-sm font-bold text-[#3db87a]">{incomeRange[0]} - {incomeRange[1]} triệu VNĐ</span>
+                  <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Thu nhập hàng tháng</span>
+                  <span className="text-xl font-bold text-landing-accent font-kalam">{incomeRange[0]} - {incomeRange[1]} triệu VNĐ</span>
                 </div>
-                <div className="px-2">
+                <div className="px-3 border-[3px] border-landing-border radius-wobbly bg-landing-muted p-4 shadow-hard-sm">
                   <Slider
                     min={0}
                     max={20}
@@ -1985,7 +1948,7 @@ export default function RescomDashboard() {
                     className="w-full"
                   />
                 </div>
-                <div className="flex justify-between text-xs text-[#6B7280] font-medium">
+                <div className="flex justify-between text-lg text-landing-fg/70 font-bold">
                   <span className="w-1/4 text-left">Dưới 3 triệu</span>
                   <span className="w-1/4 text-center">3 - 5 triệu</span>
                   <span className="w-1/4 text-center">5 - 10 triệu</span>
@@ -1994,8 +1957,8 @@ export default function RescomDashboard() {
               </div>
 
               {/* SỞ THÍCH */}
-              <div className="space-y-3">
-                <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Sở thích</span>
+              <div className="space-y-4">
+                <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Sở thích</span>
                 <div className="flex flex-wrap gap-3">
                   {ALL_SURVEY_TOPICS.map((hobby) => {
                     const selected = selectedHobbies.includes(hobby)
@@ -2009,13 +1972,13 @@ export default function RescomDashboard() {
                             setSelectedHobbies([...selectedHobbies, hobby])
                           }
                         }}
-                        className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-semibold border transition-all ${selected
-                          ? "bg-[#E8F3EC] text-[#3db87a] border-[#3db87a]"
-                          : "bg-white text-[#1A1A1A] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                        className={`flex items-center gap-3 px-4 py-2.5 radius-wobbly text-lg font-bold border-2 transition-all ${selected
+                          ? "bg-landing-yellow text-landing-fg border-landing-border shadow-[2px_2px_0_0_#2d2d2d] translate-y-[-2px]"
+                          : "bg-white text-landing-fg border-landing-border hover:bg-landing-yellow/30"
                           }`}
                       >
-                        <div className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selected ? "bg-[#3db87a] border-[#3db87a]" : "border-[#D1D5DB]"}`}>
-                          {selected && <Check className="w-3 h-3 text-white stroke-[3]" />}
+                        <div className={`w-5 h-5 radius-wobbly border-2 flex items-center justify-center transition-colors ${selected ? "bg-landing-accent border-landing-accent" : "border-landing-border bg-white"}`}>
+                          {selected && <Check className="w-4 h-4 text-white stroke-[3]" />}
                         </div>
                         <span>{hobby}</span>
                       </button>
@@ -2025,12 +1988,12 @@ export default function RescomDashboard() {
               </div>
 
               {/* MỨC THƯỞNG TỐI THIỂU */}
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Mức thưởng tối thiểu</span>
-                  <span className="text-sm font-bold text-[#3db87a]">{bountyRange}đ</span>
+                  <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Mức thưởng tối thiểu</span>
+                  <span className="text-xl font-bold text-landing-accent font-kalam">{bountyRange}đ</span>
                 </div>
-                <div className="px-2">
+                <div className="px-3 border-[3px] border-landing-border radius-wobbly bg-landing-muted p-4 shadow-hard-sm">
                   <Slider
                     min={5}
                     max={50}
@@ -2040,16 +2003,16 @@ export default function RescomDashboard() {
                     className="w-full"
                   />
                 </div>
-                <div className="flex justify-between text-xs text-[#6B7280] font-medium">
+                <div className="flex justify-between text-lg text-landing-fg/70 font-bold">
                   <span>5đ</span>
                   <span>50đ</span>
                 </div>
               </div>
 
               {/* THỜI GIAN HOÀN THÀNH */}
-              <div className="space-y-3">
-                <span className="text-sm font-extrabold uppercase tracking-wider text-[#6B7280]">Thời gian hoàn thành</span>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className="space-y-4">
+                <span className="text-lg font-bold uppercase tracking-wider text-landing-fg font-kalam">Thời gian hoàn thành</span>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {["Dưới 5 phút", "Từ 5 - 10 phút", "Từ 10 - 15 phút", "Trên 15 phút"].map((time) => {
                     const selected = selectedDuration.includes(time)
                     return (
@@ -2062,9 +2025,9 @@ export default function RescomDashboard() {
                             setSelectedDuration([...selectedDuration, time])
                           }
                         }}
-                        className={`px-3 py-2.5 rounded-xl text-sm font-semibold text-center border transition-all ${selected
-                          ? "text-[#3db87a] border-[#3db87a] bg-[#E8F3EC]"
-                          : "bg-white text-[#3db87a] border-[#E5E7EB] hover:bg-[#FAF8F1]"
+                        className={`px-4 py-3 radius-wobbly text-lg font-bold text-center border-2 transition-all ${selected
+                          ? "bg-landing-yellow text-landing-fg border-landing-border shadow-[2px_2px_0_0_#2d2d2d] translate-y-[-2px]"
+                          : "bg-white text-landing-fg border-landing-border hover:bg-landing-yellow/30"
                           }`}
                       >
                         {time}
@@ -2077,13 +2040,13 @@ export default function RescomDashboard() {
             </div>
 
             {/* Footer */}
-            <div className="p-6 border-t border-[#E5E7EB] flex items-center justify-between gap-4">
+            <div className="p-6 border-t-[3px] border-dashed border-landing-border flex items-center justify-between gap-6 bg-paper">
               <button
                 onClick={() => {
                   handleClearFilters()
                   showToast("Đã xóa mọi thiết lập lọc", "info")
                 }}
-                className="text-sm font-bold text-[#DC2626] hover:underline px-2"
+                className="text-lg font-bold text-landing-accent hover:line-through decoration-2 px-2"
               >
                 Xóa bộ lọc
               </button>
@@ -2092,7 +2055,7 @@ export default function RescomDashboard() {
                   setShowAdvancedFilters(false)
                   showToast("Áp dụng bộ lọc thành công!", "success")
                 }}
-                className="w-48 md:w-64 h-12 bg-[#3db87a] hover:bg-[#13422C] text-white rounded-full text-sm font-bold shadow-md shadow-green-950/20 active:scale-95 transition-all"
+                className="w-48 md:w-64 h-14 bg-landing-fg hover:bg-landing-accent text-white radius-wobbly text-xl font-bold shadow-hard active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all rotate-1"
               >
                 Áp dụng
               </button>
@@ -2104,8 +2067,11 @@ export default function RescomDashboard() {
 
       {/* FULL SURVEY SIMULATION DIALOG / INTERACTIVE MODAL */}
       {activeSurveyForModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Xác minh khảo sát">
-          <div className="bg-white rounded-3xl w-full max-w-lg border border-[#E5E7EB] shadow-2xl p-6 md:p-8 animate-scale-in relative space-y-6">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-landing-fg/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Xác minh khảo sát">
+          <div className="bg-white radius-wobbly w-full max-w-lg border-[3px] border-landing-border shadow-hard p-6 md:p-10 animate-scale-in relative space-y-6 rotate-1">
+
+            {/* Tack decoration */}
+            <div className="absolute top-3 left-1/2 -translate-x-1/2 w-6 h-6 rounded-full bg-landing-accent shadow-[2px_4px_0_rgba(0,0,0,0.3)] z-10 before:content-[''] before:absolute before:top-1 before:left-1 before:w-2 before:h-2 before:bg-white/40 before:rounded-full" />
 
             {/* Top Close */}
             <button
@@ -2113,52 +2079,52 @@ export default function RescomDashboard() {
                 setActiveSurveyForModal(null)
                 setSurveyInProgress(false)
               }}
-              className="absolute top-5 right-5 p-1 rounded-full text-[#6B7280] hover:bg-[#FAF8F1]"
+              className="absolute top-6 right-6 p-2 radius-wobbly border-2 border-transparent hover:border-landing-border bg-white text-landing-fg hover:bg-landing-yellow transition-colors"
               aria-label="Đóng hộp thoại"
             >
               <X className="w-6 h-6" />
             </button>
 
             {/* Header Title */}
-            <div className="text-center space-y-2">
-              <div className="inline-flex items-center gap-1 bg-[#E8F3EC] text-[#3db87a] font-bold px-3 py-1.5 rounded-full text-xs">
-                <Award className="w-4 h-4" />
+            <div className="text-center space-y-4 mt-4">
+              <div className="inline-flex items-center gap-2 bg-landing-yellow text-landing-fg border-2 border-landing-border font-bold px-4 py-2 radius-wobbly text-sm shadow-hard-sm -rotate-2">
+                <Award className="w-5 h-5 fill-landing-accent text-landing-accent" />
                 <span>Hoàn thành để nhận +{activeSurveyForModal.pointBounty}đ</span>
               </div>
-              <h3 className="font-bold text-lg md:text-xl text-[#1A1A1A] px-2">{activeSurveyForModal.title}</h3>
+              <h3 className="font-bold text-3xl font-kalam text-landing-fg px-2">{activeSurveyForModal.title}</h3>
             </div>
 
             {/* Description Details */}
-            <div className="bg-[#FAF8F1] border border-[#E5E7EB] rounded-2xl p-4 space-y-3.5">
-              <div className="flex gap-3">
-                <Info className="w-5 h-5 text-[#3db87a] mt-0.5 flex-shrink-0" />
-                <p className="text-xs text-[#6B7280] leading-relaxed">
+            <div className="bg-paper border-[3px] border-dashed border-landing-border radius-wobbly p-5 space-y-4 rotate-1">
+              <div className="flex gap-4">
+                <Info className="w-6 h-6 text-landing-accent mt-0.5 flex-shrink-0" />
+                <p className="text-lg font-bold text-landing-fg/80 leading-relaxed">
                   Để đảm bảo chất lượng phản hồi, vui lòng thực hiện khảo sát nghiêm túc. Biểu mẫu chính thức đã được mở ở một tab mới trên trình duyệt của bạn.
                 </p>
               </div>
 
               {/* Anti-cheat countdown status */}
-              <div className="flex items-center justify-between text-xs border-t border-[#E5E7EB] pt-3">
-                <span className="font-semibold text-[#6B7280]">Trạng thái làm bài:</span>
+              <div className="flex items-center justify-between text-sm border-t-[3px] border-dashed border-landing-border/20 pt-4">
+                <span className="font-bold font-kalam text-xl text-landing-fg/60">Trạng thái:</span>
                 {countdown > 0 ? (
-                  <span className="text-[#F59E0B] font-bold flex items-center gap-1.5 animate-pulse">
-                    <Clock className="w-4 h-4" />
-                    Đang làm (còn {countdown} giây)
+                  <span className="text-landing-secondary font-bold flex items-center gap-2 animate-pulse text-lg">
+                    <Clock className="w-5 h-5" />
+                    Đang làm (còn {countdown}s)
                   </span>
                 ) : (
-                  <span className="text-[#16A34A] font-bold flex items-center gap-1.5">
-                    <CheckCircle className="w-4 h-4" />
-                    Đã hoàn tất thời gian tối thiểu
+                  <span className="text-landing-accent font-bold flex items-center gap-2 text-lg">
+                    <CheckCircle className="w-5 h-5" />
+                    Đã hoàn tất thời gian
                   </span>
                 )}
               </div>
             </div>
 
             {/* Input code validation form */}
-            <form onSubmit={handleSubmitCompletionCode} className="space-y-4">
-              <div className="space-y-2">
-                <label className="text-xs font-extrabold uppercase tracking-wider text-[#6B7280] block">
-                  Nhập mã xác minh (Xem cuối Google Form)
+            <form onSubmit={handleSubmitCompletionCode} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xl font-bold font-kalam text-landing-fg block ml-2">
+                  Nhập mã xác minh (Xem cuối form)
                 </label>
                 <input
                   type="text"
@@ -2168,54 +2134,54 @@ export default function RescomDashboard() {
                     setCodeError("")
                   }}
                   placeholder="Nhập mã hoàn thành..."
-                  className="w-full h-12 text-center text-lg font-bold font-mono tracking-widest uppercase border-2 border-[#E5E7EB] rounded-2xl focus:border-[#3db87a] focus:ring-4 focus:ring-green-100 outline-none transition-all"
+                  className="w-full h-14 px-4 text-center text-xl font-bold tracking-widest uppercase border-[3px] border-landing-border radius-wobbly focus:outline-none focus:translate-y-[-2px] focus:shadow-hard-sm transition-all bg-white"
                   maxLength={15}
                   required
                 />
 
                 {/* Visual Cheat hint helper for testing */}
-                <div className="flex items-center justify-between text-[10px] text-[#6B7280] pt-1">
-                  <span>Mẹo: Mã xác nhận của khảo sát này là:</span>
-                  <span className="font-bold text-[#3db87a] bg-[#E8F3EC] px-2 py-0.5 rounded select-all cursor-pointer">
+                <div className="flex items-center justify-between text-sm text-landing-fg/70 pt-2 font-bold px-2">
+                  <span>Mẹo: Mã là:</span>
+                  <span className="font-bold text-landing-accent bg-landing-yellow px-3 py-1 radius-wobbly border-2 border-landing-border select-all cursor-pointer shadow-[2px_2px_0_0_#2d2d2d] rotate-2">
                     {activeSurveyForModal.completionCode}
                   </span>
                 </div>
               </div>
 
               {codeError && (
-                <p className="text-xs text-[#DC2626] font-semibold text-center animate-shake leading-snug">
+                <p className="text-lg text-landing-accent font-bold text-center animate-shake leading-snug bg-red-100 p-3 radius-wobbly border-2 border-landing-accent -rotate-1">
                   ❌ {codeError}
                 </p>
               )}
 
               {/* Actions */}
-              <div className="flex gap-3">
+              <div className="flex gap-4">
                 <button
                   type="button"
                   onClick={() => {
                     setActiveSurveyForModal(null)
                     setSurveyInProgress(false)
                   }}
-                  className="w-1/3 h-12 border border-[#E5E7EB] text-[#1A1A1A] hover:bg-[#FAF8F1] font-bold text-xs rounded-full transition-colors"
+                  className="w-1/3 h-14 border-[3px] border-landing-border bg-white text-landing-fg hover:bg-landing-yellow font-bold text-lg radius-wobbly transition-colors shadow-hard active:translate-y-[2px] active:translate-x-[2px] active:shadow-none rotate-1"
                 >
                   Hủy bỏ
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingCode || countdown > 0}
-                  className={`flex-1 h-12 text-white font-bold text-xs rounded-full transition-all shadow-md flex items-center justify-center gap-2 ${countdown > 0
-                    ? "bg-gray-300 cursor-not-allowed shadow-none"
-                    : "bg-[#3db87a] hover:bg-[#13422C] shadow-green-950/20 active:scale-95"
+                  className={`flex-1 h-14 text-white font-bold text-lg radius-wobbly transition-all border-[3px] shadow-hard flex items-center justify-center gap-2 ${countdown > 0
+                    ? "bg-landing-muted border-landing-border/50 text-landing-fg/50 cursor-not-allowed shadow-none"
+                    : "bg-landing-accent border-landing-border hover:bg-[#d43f3f] hover:translate-y-[-2px] hover:translate-x-[-2px] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none -rotate-1"
                     }`}
                 >
                   {isSubmittingCode ? (
                     <>
-                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <div className="w-6 h-6 border-[3px] border-white border-t-transparent rounded-full animate-spin"></div>
                       <span>Đang xác nhận...</span>
                     </>
                   ) : (
                     <>
-                      <CheckCircle className="w-4 h-4" />
+                      <CheckCircle className="w-5 h-5" />
                       <span>Xác nhận hoàn thành</span>
                     </>
                   )}
@@ -2229,131 +2195,131 @@ export default function RescomDashboard() {
 
       {/* FAB MODAL - CREATE NEW SURVEY */}
       {showFABModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo khảo sát mới">
-          <div className="bg-white rounded-2xl w-full max-w-[900px] shadow-2xl relative flex flex-col max-h-[95vh] overflow-hidden">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-landing-fg/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label="Tạo khảo sát mới">
+          <div className="bg-white radius-wobbly w-full max-w-[900px] border-[3px] border-landing-border shadow-hard relative flex flex-col max-h-[95vh] overflow-hidden rotate-[0.5deg]">
 
             {/* Header */}
-            <div className="px-5 pt-8 pb-6 border-b border-[#f0f0f0] flex justify-between items-start">
-              <div className="flex gap-4">
-                <div className="w-8 h-8 rounded-full border border-[#2e7d32] flex items-center justify-center text-[#2e7d32] shrink-0 mt-0.5">
-                  <Plus className="w-5 h-5" />
+            <div className="px-8 pt-8 pb-6 border-b-[3px] border-dashed border-landing-border flex justify-between items-start bg-landing-yellow/20">
+              <div className="flex gap-5">
+                <div className="w-12 h-12 radius-wobbly border-[3px] border-landing-border bg-white flex items-center justify-center text-landing-accent shrink-0 mt-0.5 rotate-3 shadow-hard-sm">
+                  <Plus className="w-7 h-7 stroke-[3]" />
                 </div>
                 <div>
-                  <h2 className="text-[22px] font-bold text-[#1a1a1a]">Đăng khảo sát mới</h2>
-                  <p className="text-sm text-[#666] mt-1">Phân phối khảo sát của bạn tới sinh viên phù hợp. Điểm sẽ ký quỹ an toàn.</p>
+                  <h2 className="text-3xl font-bold font-kalam text-landing-fg">Đăng khảo sát mới</h2>
+                  <p className="text-lg text-landing-fg/70 font-bold mt-1">Phân phối khảo sát của bạn tới sinh viên phù hợp. Điểm sẽ ký quỹ an toàn.</p>
                 </div>
               </div>
-              <button onClick={() => { setShowFABModal(false); setNewSurveyStep(1); }} className="p-2 text-[#666] hover:bg-[#f5f5f5] rounded-lg transition-colors">
-                <X className="w-5 h-5" />
+              <button onClick={() => { setShowFABModal(false); setNewSurveyStep(1); }} className="p-2 radius-wobbly border-2 border-transparent hover:border-landing-border bg-white text-landing-fg hover:bg-landing-accent hover:text-white transition-colors rotate-3">
+                <X className="w-6 h-6" />
               </button>
             </div>
 
             {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto px-5 py-8">
+            <div className="flex-1 overflow-y-auto px-8 py-8 custom-scrollbar">
 
-              {/* Progress Steps */}
-              <div className="flex items-center justify-between mb-10">
+              {/* Progress Steps Sketched */}
+              <div className="flex items-center justify-between mb-10 bg-paper p-4 radius-wobbly border-[3px] border-dashed border-landing-border/30 -rotate-1">
                 {/* Step 1 */}
                 <div className="flex items-center gap-3">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep > 1 ? 'bg-[#1b8045] text-white' : newSurveyStep === 1 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#666]'}`}>
-                    {newSurveyStep > 1 ? <Check className="w-4 h-4" /> : "1"}
+                  <div className={`w-10 h-10 radius-wobbly border-2 border-landing-border flex items-center justify-center font-bold text-xl shrink-0 ${newSurveyStep > 1 ? 'bg-landing-accent text-white' : newSurveyStep === 1 ? 'bg-landing-accent text-white' : 'bg-white text-landing-fg'}`}>
+                    {newSurveyStep > 1 ? <Check className="w-6 h-6" /> : "1"}
                   </div>
-                  <span className={`text-[15px] whitespace-nowrap ${newSurveyStep >= 1 ? 'text-[#1b8045] font-bold' : 'text-[#666] font-medium'}`}>Thông tin khảo sát</span>
+                  <span className={`text-xl font-kalam whitespace-nowrap ${newSurveyStep >= 1 ? 'text-landing-fg font-bold' : 'text-landing-fg/50'}`}>Thông tin khảo sát</span>
                 </div>
-                <div className={`flex-1 h-[2px] mx-4 ${newSurveyStep >= 2 ? 'bg-[#1b8045] opacity-40' : 'bg-[#e0e0e0]'}`} />
+                <div className="flex-1 h-1 mx-4 bg-landing-border border-t-2 border-dashed border-landing-border opacity-30" />
 
                 {/* Step 2 */}
                 <div className="flex items-center gap-3">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep > 2 ? 'bg-[#1b8045] text-white' : newSurveyStep === 2 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#999]'}`}>
-                    {newSurveyStep > 2 ? <Check className="w-4 h-4" /> : "2"}
+                  <div className={`w-10 h-10 radius-wobbly border-2 border-landing-border flex items-center justify-center font-bold text-xl shrink-0 ${newSurveyStep > 2 ? 'bg-landing-accent text-white' : newSurveyStep === 2 ? 'bg-landing-accent text-white' : 'bg-white text-landing-fg'}`}>
+                    {newSurveyStep > 2 ? <Check className="w-6 h-6" /> : "2"}
                   </div>
-                  <span className={`text-[15px] whitespace-nowrap ${newSurveyStep >= 2 ? 'text-[#1b8045] font-bold' : 'text-[#999] font-medium'}`}>Cấu hình phân phối</span>
+                  <span className={`text-xl font-kalam whitespace-nowrap ${newSurveyStep >= 2 ? 'text-landing-fg font-bold' : 'text-landing-fg/50'}`}>Cấu hình phân phối</span>
                 </div>
-                <div className={`flex-1 h-[2px] mx-4 ${newSurveyStep >= 3 ? 'bg-[#1b8045] opacity-40' : 'bg-[#e0e0e0]'}`} />
+                <div className="flex-1 h-1 mx-4 bg-landing-border border-t-2 border-dashed border-landing-border opacity-30" />
 
                 {/* Step 3 */}
                 <div className="flex items-center gap-3">
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-[13px] shrink-0 ${newSurveyStep === 3 ? 'bg-[#1b8045] text-white' : 'bg-[#e0e0e0] text-[#999]'}`}>
+                  <div className={`w-10 h-10 radius-wobbly border-2 border-landing-border flex items-center justify-center font-bold text-xl shrink-0 ${newSurveyStep === 3 ? 'bg-landing-accent text-white' : 'bg-white text-landing-fg'}`}>
                     3
                   </div>
-                  <span className={`text-[15px] whitespace-nowrap ${newSurveyStep === 3 ? 'text-[#1b8045] font-bold' : 'text-[#999] font-medium'}`}>Đối tượng khảo sát</span>
+                  <span className={`text-xl font-kalam whitespace-nowrap ${newSurveyStep === 3 ? 'text-landing-fg font-bold' : 'text-landing-fg/50'}`}>Đối tượng khảo sát</span>
                 </div>
               </div>
 
               {/* Form Section */}
               {newSurveyStep === 1 && (
-                <div className="space-y-6">
-                  <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
-                    <FileText className="w-5 h-5" />
+                <div className="space-y-8">
+                  <h3 className="text-2xl font-bold font-kalam text-landing-fg flex items-center gap-3 uppercase tracking-wide">
+                    <FileText className="w-7 h-7 text-landing-accent" />
                     THÔNG TIN KHẢO SÁT (NỘI DUNG VÀ LIÊN KẾT)
                   </h3>
-                  <div className="space-y-5">
+                  <div className="space-y-6">
                     <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">Tiêu đề khảo sát <span className="text-red-500">*</span></label>
-                      <input type="text" value={newSurveyTitle} onChange={(e) => setNewSurveyTitle(e.target.value)} placeholder="Ví dụ: Đánh giá dịch vụ Grab tại TP.HCM..." className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                      <label className="text-lg font-bold text-landing-fg ml-2">Tiêu đề khảo sát <span className="text-landing-accent">*</span></label>
+                      <input type="text" value={newSurveyTitle} onChange={(e) => setNewSurveyTitle(e.target.value)} placeholder="Ví dụ: Đánh giá dịch vụ Grab tại TP.HCM..." className="w-full h-14 px-5 text-xl bg-white border-[3px] border-landing-border radius-wobbly focus:outline-none focus:translate-y-[-2px] focus:shadow-hard-sm transition-all" />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">Đường dẫn Google Form <span className="text-red-500">*</span></label>
-                      <input type="url" value={newSurveyUrl} onChange={(e) => setNewSurveyUrl(e.target.value)} placeholder="https://docs.google.com/forms/d/..." className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
+                      <label className="text-lg font-bold text-landing-fg ml-2">Đường dẫn Google Form <span className="text-landing-accent">*</span></label>
+                      <input type="url" value={newSurveyUrl} onChange={(e) => setNewSurveyUrl(e.target.value)} placeholder="https://docs.google.com/forms/d/..." className="w-full h-14 px-5 text-xl bg-white border-[3px] border-landing-border radius-wobbly focus:outline-none focus:translate-y-[-2px] focus:shadow-hard-sm transition-all" />
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-4 relative">
+                    <div className="grid grid-cols-1 md:grid-cols-[1fr_2fr] gap-6 relative">
                       <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">Mã xác nhận hoàn thành <span className="text-red-500">*</span></label>
-                        <input type="text" value={newSurveyCode} onChange={(e) => setNewSurveyCode(e.target.value)} placeholder="VD: HOANTHANH99" className="w-full h-[48px] px-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all font-mono uppercase" />
+                        <label className="text-lg font-bold text-landing-fg ml-2">Mã xác nhận <span className="text-landing-accent">*</span></label>
+                        <input type="text" value={newSurveyCode} onChange={(e) => setNewSurveyCode(e.target.value)} placeholder="VD: HOANTHANH" className="w-full h-14 px-5 text-xl font-bold bg-white border-[3px] border-landing-border radius-wobbly focus:outline-none focus:translate-y-[-2px] focus:shadow-hard-sm transition-all font-mono uppercase" />
                       </div>
                       <div className="space-y-2 relative" ref={topicDropdownRef}>
-                        <label className="text-[14px] font-bold text-[#333]">Chủ đề khảo sát <span className="text-red-500">*</span> <span className="text-[#666] font-normal text-[13px]">(Có thể chọn nhiều chủ đề)</span></label>
+                        <label className="text-lg font-bold text-landing-fg ml-2">Chủ đề khảo sát <span className="text-landing-accent">*</span> <span className="text-landing-fg/60 font-bold text-sm">(Chọn nhiều)</span></label>
 
                         <div
                           onClick={() => setIsSurveyTopicDropdownOpen(!isSurveyTopicDropdownOpen)}
-                          className={`min-h-[48px] border rounded-xl bg-white p-1.5 flex items-center flex-wrap gap-2 pr-10 relative cursor-pointer transition-all ${isSurveyTopicDropdownOpen ? 'border-[#1b8045] ring-1 ring-[#1b8045]' : 'border-[#e0e0e0]'}`}
+                          className={`min-h-[56px] border-[3px] radius-wobbly bg-white p-2 flex items-center flex-wrap gap-2 pr-12 relative cursor-pointer transition-all ${isSurveyTopicDropdownOpen ? 'border-landing-accent ring-2 ring-landing-accent/20' : 'border-landing-border'}`}
                         >
                           {selectedSurveyTopics.length === 0 && (
-                            <span className="text-[15px] text-[#999] px-2.5 pt-1">Chọn chủ đề...</span>
+                            <span className="text-lg text-landing-fg/50 px-3 font-bold">Chọn chủ đề...</span>
                           )}
                           {selectedSurveyTopics.map((topic) => (
-                            <div key={topic} className="flex items-center gap-1.5 bg-[#e8f5ed] text-[#1b8045] px-3 py-1.5 rounded-full text-[13px] font-medium">
+                            <div key={topic} className="flex items-center gap-2 bg-landing-yellow text-landing-fg border-2 border-landing-border px-3 py-1 radius-wobbly text-sm font-bold shadow-[2px_2px_0_0_#2d2d2d] rotate-1">
                               {topic}
                               <button
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   setSelectedSurveyTopics(selectedSurveyTopics.filter(t => t !== topic));
                                 }}
-                                className="hover:bg-[#d1ebd9] rounded-full p-0.5"
+                                className="hover:text-landing-accent rounded-full p-0.5"
                               >
-                                <X className="w-3.5 h-3.5" />
+                                <X className="w-4 h-4" />
                               </button>
                             </div>
                           ))}
-                          <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] transition-transform ${isSurveyTopicDropdownOpen ? 'rotate-180' : ''}`} />
+                          <ChevronDown className={`absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 text-landing-fg transition-transform ${isSurveyTopicDropdownOpen ? 'rotate-180' : ''}`} />
                         </div>
 
                         {/* Dropdown Panel */}
                         {isSurveyTopicDropdownOpen && (
-                          <div className="absolute top-[calc(100%+8px)] right-0 w-[calc(100vw-32px)] sm:w-[500px] md:w-[600px] max-w-[85vw] bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-[#e0e0e0] z-50 overflow-hidden flex flex-col max-h-[400px]">
+                          <div className="absolute top-[calc(100%+8px)] right-0 w-[calc(100vw-32px)] sm:w-[500px] md:w-[600px] max-w-[85vw] bg-white border-[3px] border-landing-border radius-wobbly shadow-hard z-50 overflow-hidden flex flex-col max-h-[400px] animate-scale-in">
                             {/* Search */}
-                            <div className="p-4 border-b border-[#f0f0f0]">
+                            <div className="p-4 border-b-[3px] border-dashed border-landing-border bg-paper">
                               <div className="relative">
-                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-[#666]" />
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-landing-fg/50" />
                                 <input
                                   type="text"
                                   placeholder="Tìm kiếm chủ đề"
                                   value={surveyTopicSearch}
                                   onChange={(e) => setSurveyTopicSearch(e.target.value)}
-                                  className="w-full h-10 pl-10 pr-4 bg-[#f5f5f5] rounded-xl text-[14px] outline-none focus:bg-white focus:ring-1 focus:ring-[#1b8045] border border-transparent focus:border-[#1b8045] transition-all"
+                                  className="w-full h-12 pl-12 pr-4 bg-white radius-wobbly border-2 border-landing-border text-lg font-bold outline-none focus:shadow-hard-sm transition-all"
                                 />
                               </div>
                             </div>
 
                             {/* Grid */}
-                            <div className="p-4 overflow-y-auto flex-1 custom-scrollbar">
-                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-3">
+                            <div className="p-5 overflow-y-auto flex-1 custom-scrollbar">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-5 gap-y-4">
                                 {ALL_SURVEY_TOPICS.filter(t => removeDiacritics(t).includes(removeDiacritics(surveyTopicSearch))).map((topic) => {
                                   const isSelected = selectedSurveyTopics.includes(topic);
                                   return (
-                                    <label key={topic} className="flex items-start gap-2.5 cursor-pointer group">
-                                      <div className={`w-[18px] h-[18px] shrink-0 rounded-[4px] border-[1.5px] mt-0.5 flex items-center justify-center transition-colors ${isSelected ? 'bg-[#1b8045] border-[#1b8045]' : 'border-[#ccc] bg-white group-hover:border-[#1b8045]'}`}>
-                                        {isSelected && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
+                                    <label key={topic} className="flex items-start gap-3 cursor-pointer group">
+                                      <div className={`w-5 h-5 shrink-0 radius-wobbly border-2 mt-0.5 flex items-center justify-center transition-colors ${isSelected ? 'bg-landing-accent border-landing-accent' : 'border-landing-border bg-white group-hover:bg-landing-yellow'}`}>
+                                        {isSelected && <Check className="w-4 h-4 text-white stroke-[3]" />}
                                       </div>
                                       <input
                                         type="checkbox"
@@ -2367,22 +2333,11 @@ export default function RescomDashboard() {
                                           }
                                         }}
                                       />
-                                      <span className={`text-[13.5px] leading-snug ${isSelected ? 'font-semibold text-[#1a1a1a]' : 'text-[#555]'}`}>{topic}</span>
+                                      <span className={`text-lg leading-snug font-bold ${isSelected ? 'text-landing-fg underline decoration-wavy decoration-landing-accent' : 'text-landing-fg/70'}`}>{topic}</span>
                                     </label>
                                   )
                                 })}
                               </div>
-                            </div>
-
-                            {/* Footer */}
-                            <div className="px-5 py-3 border-t border-[#f0f0f0] bg-[#fafafa] flex items-center justify-between">
-                              <span className="text-[13px] text-[#666]">Đã chọn <span className="font-bold text-[#1a1a1a]">{selectedSurveyTopics.length}/{ALL_SURVEY_TOPICS.length}</span> chủ đề</span>
-                              <button
-                                onClick={() => setSelectedSurveyTopics([])}
-                                className="text-[13px] font-bold text-[#1b8045] hover:underline"
-                              >
-                                Xóa tất cả
-                              </button>
                             </div>
                           </div>
                         )}
@@ -2393,306 +2348,138 @@ export default function RescomDashboard() {
               )}
 
               {newSurveyStep === 2 && (
-                <div className="space-y-6">
-                  <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
-                    <Target className="w-5 h-5" />
-                    CẤU HÌNH PHÂN PHỐI
+                <div className="space-y-8 animate-fade-scale-in">
+                  <h3 className="text-2xl font-bold font-kalam text-landing-fg flex items-center gap-3 uppercase tracking-wide">
+                    <Zap className="w-7 h-7 text-landing-yellow fill-landing-yellow drop-shadow-[2px_2px_0_#2d2d2d]" />
+                    CẤU HÌNH PHÂN PHỐI & PHẦN THƯỞNG
                   </h3>
-                  <div className="space-y-6">
-
-                    {/* Row 1: Time estimate */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                      <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">Thời gian hoàn thành (ước tính) <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <Clock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                          <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer">
-                            <option>5 – 10 phút</option>
-                          </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-2 md:mt-6">
-                        <Info className="w-[18px] h-[18px] text-[#666] shrink-0 mt-0.5" />
-                        <span className="text-[14px] text-[#666]">Hệ thống sẽ đề xuất mức thưởng<br />dựa trên thời gian hoàn thành.</span>
-                      </div>
-                    </div>
-
-                    {/* Row 2: Recommendation Box */}
-                    <div className="bg-[#f4fcf7] border border-[#c3ebd4] rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <Sparkles className="w-[22px] h-[22px] text-[#1b8045] shrink-0 mt-0.5" />
+                  <div className="space-y-8">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center bg-paper border-[3px] border-dashed border-landing-border radius-wobbly p-4 rotate-1">
                         <div>
-                          <h4 className="font-bold text-[#1b8045] text-[15px]">Đề xuất mức thưởng</h4>
-                          <p className="text-[14px] text-[#666] mt-1 max-w-[400px]">Dựa trên thời gian hoàn thành bạn chọn, hệ thống<br />đề xuất mức thưởng phù hợp.</p>
+                          <label className="text-lg font-bold text-landing-fg">Mức thưởng mỗi khảo sát</label>
+                          <p className="text-sm font-bold text-landing-fg/70 mt-1">Nên đặt từ 25-50đ để tăng tốc độ phản hồi.</p>
                         </div>
-                      </div>
-                      <div className="bg-[#e9f6ef] text-[#1b8045] px-4 py-2.5 rounded-lg font-bold text-[14px] border border-[#c3ebd4] shrink-0">
-                        Đề xuất: 10 – 20 điểm
-                      </div>
-                    </div>
-
-                    {/* Row 3: Target and Bounty Inputs */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">Số phản hồi mong muốn <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <Users className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                          <input type="number" min="10" max="500" value={newSurveyTarget} onChange={(e) => setNewSurveyTarget(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] pl-12 pr-4 text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
-                        </div>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">Thưởng mỗi lượt (Điểm) <span className="text-red-500">*</span></label>
-                        <div className="relative">
-                          <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666] flex items-center justify-center rounded-full border-[1.5px] border-[#666]">
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-                          </div>
-                          <input type="number" min="5" max="100" value={newSurveyBounty} onChange={(e) => setNewSurveyBounty(Math.max(1, parseInt(e.target.value) || 0))} className="w-full h-[48px] pl-12 pr-[185px] text-[15px] border border-[#e0e0e0] rounded-xl focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] outline-none transition-all" />
-                          <div className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#e9f6ef] text-[#1b8045] px-2.5 py-1.5 rounded-lg text-[13px] font-semibold flex items-center gap-1.5 border border-[#c3ebd4]">
-                            Trong khoảng: 10 – 20 điểm
-                            <CheckCircle className="w-[14px] h-[14px]" />
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <input type="number" min="5" value={newSurveyBounty} onChange={(e) => setNewSurveyBounty(Number(e.target.value))} className="w-20 h-12 text-center text-xl font-bold bg-white border-2 border-landing-border radius-wobbly outline-none focus:shadow-hard-sm" />
+                          <span className="text-xl font-bold font-kalam text-landing-fg">điểm</span>
                         </div>
                       </div>
                     </div>
 
-                    {/* Row 4: Escrow Box */}
-                    <div className="bg-[#fffdf5] border border-[#fae8cc] rounded-xl p-6 shadow-sm flex flex-col gap-4">
-                      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-                        <div className="flex gap-4 max-w-[320px]">
-                          <Lock className="w-[26px] h-[26px] text-[#d97706] shrink-0 mt-0.5" />
-                          <div>
-                            <h4 className="font-bold text-[#d97706] text-[15px] mb-1">Ký quỹ tài khoản tự động</h4>
-                            <p className="text-[14px] text-[#666]">Hệ thống sẽ tạm giữ điểm để đảm bảo khảo sát được phân phối.</p>
-                          </div>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center bg-paper border-[3px] border-dashed border-landing-border radius-wobbly p-4 -rotate-1">
+                        <div>
+                          <label className="text-lg font-bold text-landing-fg">Số lượng phản hồi mục tiêu</label>
+                          <p className="text-sm font-bold text-landing-fg/70 mt-1">Khảo sát sẽ tự đóng khi đạt đủ số lượng.</p>
                         </div>
-                        <div className="flex items-center gap-6">
-                          <div className="flex flex-col items-center">
-                            <span className="text-[13px] font-bold text-[#666] mb-1">Số phản hồi</span>
-                            <span className="text-[15px] font-bold text-[#1a1a1a]">{newSurveyTarget}</span>
-                          </div>
-                          <span className="text-[#999] font-medium text-[15px] mt-5">×</span>
-                          <div className="flex flex-col items-center">
-                            <span className="text-[13px] font-bold text-[#666] mb-1">Thưởng mỗi lượt</span>
-                            <span className="text-[15px] font-bold text-[#1a1a1a]">{newSurveyBounty}</span>
-                          </div>
-                          <span className="text-[#999] font-medium text-[15px] mt-5">=</span>
-                          <div className="flex flex-col items-center">
-                            <span className="text-[13px] font-bold text-[#666] mb-1">Tổng ký quỹ</span>
-                            <span className="text-[17px] font-bold text-[#d97706]">{(newSurveyTarget * newSurveyBounty).toLocaleString("vi-VN")} điểm</span>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <input type="number" min="10" value={newSurveyTarget} onChange={(e) => setNewSurveyTarget(Number(e.target.value))} className="w-20 h-12 text-center text-xl font-bold bg-white border-2 border-landing-border radius-wobbly outline-none focus:shadow-hard-sm" />
+                          <span className="text-xl font-bold font-kalam text-landing-fg">người</span>
                         </div>
-                      </div>
-                      <div className="h-[1px] w-full bg-[#fae8cc] my-1"></div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-[14px] text-[#666]">Số dư khả dụng hiện tại:</span>
-                        <span className="font-bold text-[#1b8045] text-[15px]">{balance.toLocaleString("vi-VN")} điểm</span>
                       </div>
                     </div>
 
+                    {/* Cost Calculation Banner */}
+                    <div className="bg-landing-yellow/30 border-[3px] border-landing-border radius-wobbly p-6 mt-6 shadow-hard rotate-2 relative">
+                      <div className="absolute top-2 left-2 w-4 h-4 bg-white border-2 border-landing-border rounded-full" />
+                      <div className="absolute top-2 right-2 w-4 h-4 bg-white border-2 border-landing-border rounded-full" />
+                      <h4 className="text-xl font-bold font-kalam text-landing-fg text-center mb-4 border-b-2 border-dashed border-landing-border/50 pb-2">Dự Toán Chi Phí Ký Quỹ</h4>
+                      <div className="flex justify-between items-center mb-3 text-lg font-bold text-landing-fg/80">
+                        <span>Chi phí trả thưởng ({newSurveyBounty}đ x {newSurveyTarget})</span>
+                        <span>{newSurveyBounty * newSurveyTarget}đ</span>
+                      </div>
+                      <div className="flex justify-between items-center mb-4 text-lg font-bold text-landing-fg/80">
+                        <span>Phí nền tảng (0đ - Khuyến mãi)</span>
+                        <span className="text-landing-secondary">0đ</span>
+                      </div>
+                      <div className="flex justify-between items-center pt-3 border-t-[3px] border-landing-border">
+                        <span className="font-bold text-xl text-landing-fg">Tổng ký quỹ:</span>
+                        <span className="text-4xl font-bold font-kalam text-landing-accent">
+                          {newSurveyBounty * newSurveyTarget}<span className="text-2xl">đ</span>
+                        </span>
+                      </div>
+
+                      {balance < (newSurveyBounty * newSurveyTarget) && (
+                        <div className="mt-4 p-3 bg-red-100 border-2 border-landing-accent radius-wobbly flex items-center gap-3 text-landing-accent font-bold text-lg animate-shake">
+                          <AlertCircle className="w-6 h-6 flex-shrink-0" />
+                          <p>Số dư không đủ! Bạn cần thêm {(newSurveyBounty * newSurveyTarget) - balance}đ.</p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
 
               {newSurveyStep === 3 && (
-                <div className="space-y-6">
-                  <div>
-                    <h3 className="text-[14px] font-bold text-[#1b8045] flex items-center gap-2 uppercase tracking-wide">
-                      <Users className="w-5 h-5" />
-                      ĐỐI TƯỢNG KHẢO SÁT (BỘ LỌC NGƯỜI THAM GIA)
-                    </h3>
-                    <p className="text-[13px] text-[#666] mt-1.5">Hệ thống sẽ ưu tiên phân phối khảo sát đến người dùng phù hợp với bộ lọc đã chọn.</p>
-                  </div>
+                <div className="space-y-8 animate-fade-scale-in">
+                  <h3 className="text-2xl font-bold font-kalam text-landing-fg flex items-center gap-3 uppercase tracking-wide">
+                    <Target className="w-7 h-7 text-landing-secondary" />
+                    ĐỐI TƯỢNG KHẢO SÁT (TARGETING)
+                  </h3>
 
-                  {/* Grid */}
-                  <div className="grid grid-cols-2 gap-x-8 gap-y-6">
-                    {/* Field 1: Độ tuổi */}
-                    <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">
-                        Độ tuổi <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <div className="w-full min-h-[48px] pl-12 pr-10 border border-[#e0e0e0] rounded-xl bg-white flex items-center cursor-pointer">
-                          <div className="flex items-center gap-1 bg-[#e8f5ed] text-[#1b8045] px-2.5 py-1 rounded-md text-[13px] font-medium my-1.5">
-                            Dưới 18
-                            <button className="hover:bg-[#d1ebd9] rounded-sm p-0.5"><X className="w-3.5 h-3.5" /></button>
-                          </div>
-                        </div>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                  <div className="bg-landing-yellow/20 border-[3px] border-landing-border radius-wobbly p-6 shadow-hard-sm rotate-1">
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 radius-wobbly bg-white border-2 border-landing-border flex items-center justify-center text-landing-secondary shrink-0 rotate-3">
+                        <Info className="w-6 h-6" />
                       </div>
-                      <p className="text-[13px] text-[#666] pt-0.5">Bạn có thể chọn nhiều nhóm tuổi</p>
-                    </div>
-
-                    {/* Field 2: Khu vực */}
-                    <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">
-                        Khu vực <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select value={newSurveyRegion} onChange={(e) => setNewSurveyRegion(e.target.value)} className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
-                          <option value="Toàn quốc">Toàn quốc</option>
-                          <option value="Miền Bắc">Miền Bắc</option>
-                          <option value="Miền Trung">Miền Trung</option>
-                          <option value="Miền Nam">Miền Nam</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                      </div>
-                    </div>
-
-                    {/* Field 3: Tỉnh thành (Hiển thị khi chọn Miền) */}
-                    {newSurveyRegion !== "Toàn quốc" && (
-                      <div className="space-y-2">
-                        <label className="text-[14px] font-bold text-[#333]">
-                          Tỉnh / Thành phố
-                        </label>
-                        <div className="relative">
-                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                          <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
-                            <option>Tất cả ({newSurveyRegion})</option>
-                            {PROVINCES_BY_REGION[newSurveyRegion]?.map(prov => (
-                              <option key={prov} value={prov}>{prov}</option>
-                            ))}
-                          </select>
-                          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Field 4: Nghề nghiệp */}
-                    <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">
-                        Nghề nghiệp <span className="text-red-500">*</span>
-                      </label>
-                      <div className="relative">
-                        <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
-                          <option>Chọn nghề nghiệp</option>
-                          <option>Học sinh / Sinh viên</option>
-                          <option>Nhân viên văn phòng (Full-time)</option>
-                          <option>Kinh doanh tự do / Freelancer</option>
-                          <option>Quản lý / Chủ doanh nghiệp</option>
-                          <option>Nghề nghiệp khác...</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                      </div>
-                    </div>
-
-                    {/* Field 5: Mức thu nhập */}
-                    <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">
-                        Mức thu nhập (Người trả lời)
-                      </label>
-                      <div className="relative">
-                        <Wallet className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
-                          <option>Không yêu cầu</option>
-                          <option>Dưới 3.000.000 VNĐ</option>
-                          <option>Từ 3.000.000 - 5.000.000 VNĐ</option>
-                          <option>Từ 5.000.000 - 10.000.000 VNĐ</option>
-                          <option>Trên 10.000.000 VNĐ</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
-                      </div>
-                    </div>
-
-                    {/* Field 6: Khối ngành liên quan */}
-                    <div className="space-y-2">
-                      <label className="text-[14px] font-bold text-[#333]">
-                        Khối ngành liên quan
-                      </label>
-                      <div className="relative">
-                        <GraduationCap className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#666]" />
-                        <select className="w-full h-[48px] pl-12 pr-10 text-[15px] border border-[#e0e0e0] rounded-xl appearance-none bg-white focus:outline-none focus:border-[#1b8045] focus:ring-1 focus:ring-[#1b8045] cursor-pointer text-[#333]">
-                          <option>Chọn khối ngành</option>
-                          <option>Kinh tế / Quản trị / Marketing</option>
-                          <option>Truyền thông đa phương tiện / Báo chí</option>
-                          <option>Công nghệ Thông tin / Kỹ thuật phần mềm</option>
-                          <option>Ngôn ngữ / Văn hóa / Du lịch - Khách sạn</option>
-                          <option>Khối ngành khác…</option>
-                        </select>
-                        <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" />
+                      <div>
+                        <p className="text-lg font-bold text-landing-fg">Rescom sẽ tự động phân phối khảo sát của bạn dựa trên chủ đề đã chọn ở Bước 1.</p>
+                        <p className="text-sm font-bold text-landing-fg/70 mt-2">Tính năng chọn lọc sinh viên theo trường và khu vực đang được nâng cấp trong phiên bản Beta tiếp theo.</p>
                       </div>
                     </div>
                   </div>
 
-                  {/* Alert Box */}
-                  <div className="mt-8 bg-[#f4fbf9] border border-[#e2f3ec] rounded-xl p-5 flex gap-4 relative overflow-hidden shadow-sm">
-                    <Info className="w-[18px] h-[18px] text-[#426456] shrink-0 mt-0.5" />
-                    <div className="relative z-10 w-3/4">
-                      <h4 className="font-bold text-[#333] text-[15px] mb-2">Lưu ý</h4>
-                      <ul className="space-y-1.5">
-                        <li className="flex gap-2 text-[14px] text-[#555]"><span className="text-[#888]">•</span> Mức thưởng không được thấp hơn đề xuất tối thiểu và không vượt quá mức tối đa.</li>
-                        <li className="flex gap-2 text-[14px] text-[#555]"><span className="text-[#888]">•</span> Điểm sẽ được hoàn trả nếu khảo sát bị từ chối hoặc không được phê duyệt.</li>
-                      </ul>
-                    </div>
-                    {/* Decorative Illustration Mock */}
-                    <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none flex items-center justify-center opacity-90">
-                      <div className="w-20 h-20 bg-[#d8f0e3] rounded-2xl flex items-center justify-center rotate-6 shadow-sm">
-                        <ClipboardCheck className="w-10 h-10 text-[#2e7d32]" />
-                      </div>
-                      <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow-md">
-                        <Target className="w-7 h-7 text-[#4ade80]" />
-                      </div>
-                    </div>
+                  <div className="space-y-4">
+                    <label className="text-lg font-bold text-landing-fg ml-2">Phạm vi ưu tiên</label>
+                    <select value={newSurveyRegion} onChange={(e) => setNewSurveyRegion(e.target.value)} className="w-full h-14 px-5 appearance-none border-[3px] border-landing-border radius-wobbly text-xl font-bold text-landing-fg focus:outline-none focus:translate-y-[-2px] focus:shadow-hard-sm bg-white transition-all cursor-pointer">
+                      <option value="Toàn quốc">Toàn quốc (Tất cả khu vực)</option>
+                      <option value="Miền Bắc">Khu vực Miền Bắc (Hà Nội,...)</option>
+                      <option value="Miền Trung">Khu vực Miền Trung (Đà Nẵng,...)</option>
+                      <option value="Miền Nam">Khu vực Miền Nam (TP.HCM,...)</option>
+                    </select>
                   </div>
                 </div>
               )}
+
             </div>
 
-            {/* Footer */}
-            <div className="px-5 py-5 border-t border-[#f0f0f0] flex items-center justify-between bg-white">
-              <div className="flex items-center gap-2 text-[#666]">
-                <Lock className="w-[18px] h-[18px]" />
-                <span className="text-[14px]">Mọi thay đổi sẽ được lưu tạm</span>
-              </div>
-
-              <div className="flex items-center gap-4">
+            {/* Footer Actions */}
+            <div className="px-8 py-6 border-t-[3px] border-dashed border-landing-border bg-paper flex items-center justify-between">
+              {newSurveyStep > 1 ? (
                 <button
-                  onClick={() => setNewSurveyStep(Math.max(1, newSurveyStep - 1))}
-                  disabled={newSurveyStep === 1}
-                  className={`w-9 h-9 rounded-full border border-[#e0e0e0] flex items-center justify-center transition-colors ${newSurveyStep === 1 ? 'bg-[#f5f5f5] text-[#ccc] cursor-not-allowed' : 'text-[#333] hover:bg-[#f5f5f5]'}`}>
-                  <ArrowLeft className="w-4 h-4" />
-                </button>
-                <span className="text-[14px] font-bold text-[#333]">{newSurveyStep} / 3</span>
-                <button
-                  onClick={() => setNewSurveyStep(Math.min(3, newSurveyStep + 1))}
-                  disabled={newSurveyStep === 3}
-                  className={`w-9 h-9 rounded-full border border-[#e0e0e0] flex items-center justify-center transition-colors ${newSurveyStep === 3 ? 'bg-[#f5f5f5] text-[#ccc] cursor-not-allowed' : 'text-[#333] hover:bg-[#f5f5f5]'}`}>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              <div className="flex gap-3">
-                <button
-                  onClick={() => { setShowFABModal(false); setNewSurveyStep(1); }}
-                  className="px-6 h-[44px] rounded-lg border border-[#e0e0e0] text-[#333] font-bold text-[14px] hover:bg-[#f5f5f5] transition-colors bg-white shadow-sm"
+                  type="button"
+                  onClick={() => setNewSurveyStep(prev => prev - 1)}
+                  className="px-6 h-12 radius-wobbly border-[3px] border-landing-border bg-white text-landing-fg font-bold text-lg hover:bg-landing-yellow shadow-hard-sm transition-all -rotate-1"
                 >
-                  Hủy
+                  Quay lại
                 </button>
-                {newSurveyStep < 3 ? (
-                  <button
-                    onClick={() => setNewSurveyStep(newSurveyStep + 1)}
-                    className="px-6 h-[44px] rounded-lg bg-[#00a651] text-white font-bold text-[14px] hover:bg-[#008c44] transition-colors flex items-center gap-2 shadow-sm"
-                  >
-                    Tiếp tục
-                    <ArrowRight className="w-5 h-5" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={() => {
-                      showToast("Đã gửi duyệt khảo sát thành công!", "success");
-                      setShowFABModal(false);
-                      setNewSurveyStep(1);
-                    }}
-                    className="px-6 h-[44px] rounded-lg bg-[#00a651] text-white font-bold text-[14px] hover:bg-[#008c44] transition-colors flex items-center gap-2 shadow-sm"
-                  >
-                    <Check className="w-[18px] h-[18px]" />
-                    Đăng khảo sát & Ký quỹ
-                  </button>
-                )}
-              </div>
+              ) : (
+                <div />
+              )}
+
+              {newSurveyStep < 3 ? (
+                <button
+                  type="button"
+                  onClick={() => setNewSurveyStep(prev => prev + 1)}
+                  className="px-8 h-14 radius-wobbly border-[3px] border-landing-border bg-landing-fg text-white font-bold text-lg hover:bg-landing-accent shadow-hard active:translate-y-[2px] active:translate-x-[2px] active:shadow-none transition-all rotate-1"
+                >
+                  Tiếp theo
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleCreateSurvey}
+                  disabled={balance < (newSurveyBounty * newSurveyTarget)}
+                  className={`px-8 h-14 radius-wobbly border-[3px] border-landing-border font-bold text-lg shadow-hard flex items-center gap-2 transition-all rotate-2 ${balance < (newSurveyBounty * newSurveyTarget)
+                    ? 'bg-landing-muted text-landing-fg/50 cursor-not-allowed shadow-none'
+                    : 'bg-landing-accent text-white hover:bg-[#d43f3f] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none'
+                    }`}
+                >
+                  <CheckCircle className="w-6 h-6" />
+                  Đăng khảo sát
+                </button>
+              )}
             </div>
 
           </div>

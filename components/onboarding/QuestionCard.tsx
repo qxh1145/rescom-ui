@@ -58,16 +58,16 @@ export function QuestionCard({
         {/* Trigger Button */}
         <button
           onClick={() => setDropdownOpen(!dropdownOpen)}
-          className={`w-full text-left px-5 py-4 rounded-[18px] border-[1.5px] transition-all duration-200 flex items-center justify-between ${
+          className={`w-full text-left px-5 py-4 radius-wobbly border-[3px] transition-all duration-200 flex items-center justify-between shadow-hard-sm ${
             selectedValue
-              ? 'border-[#4ade80] bg-white'
-              : 'border-[#f0f0f0] hover:border-[#4ade80] bg-white'
+              ? 'border-landing-accent bg-landing-yellow/20'
+              : 'border-landing-border bg-white hover:bg-landing-yellow/10 hover:translate-y-[-2px]'
           }`}
         >
-          <span className={`text-[15px] font-medium ${selectedValue ? 'text-[#1a3628]' : 'text-[#9ca3af]'}`}>
+          <span className={`text-lg font-bold ${selectedValue ? 'text-landing-fg' : 'text-landing-fg/60'}`}>
             {selectedValue || 'Chọn tỉnh/thành phố...'}
           </span>
-          <ChevronDown className={`w-5 h-5 text-[#9ca3af] transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-6 h-6 text-landing-fg transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {/* Dropdown Panel */}
@@ -78,27 +78,27 @@ export function QuestionCard({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.98 }}
               transition={{ duration: 0.2 }}
-              className="absolute z-50 mt-2 w-full bg-white rounded-2xl border border-[#e5e7eb] shadow-[0_12px_40px_rgba(0,0,0,0.12)] overflow-hidden"
+              className="absolute z-50 mt-3 w-full bg-white radius-wobbly border-[3px] border-landing-border shadow-hard overflow-hidden rotate-1"
             >
               {/* Search Input */}
-              <div className="p-3 border-b border-[#f0f0f0]">
+              <div className="p-3 border-b-[3px] border-dashed border-landing-border bg-paper">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#9ca3af]" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-landing-fg/50" />
                   <input
                     ref={searchInputRef}
                     type="text"
                     placeholder="Tìm tỉnh/thành phố..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full pl-9 pr-4 py-2.5 text-[14px] rounded-xl bg-[#f9fafb] border border-[#e5e7eb] focus:border-[#4ade80] focus:outline-none focus:ring-2 focus:ring-[#4ade80]/20 transition-all placeholder:text-[#9ca3af]"
+                    className="w-full pl-10 pr-4 py-3 text-lg font-bold bg-white radius-wobbly border-2 border-landing-border focus:border-landing-accent focus:outline-none focus:shadow-hard-sm transition-all placeholder:text-landing-fg/40"
                   />
                 </div>
               </div>
 
               {/* Options List */}
-              <div className="max-h-[280px] overflow-y-auto p-2 custom-scrollbar">
+              <div className="max-h-[280px] overflow-y-auto p-3 custom-scrollbar space-y-2">
                 {filteredOptions.length === 0 ? (
-                  <div className="px-4 py-6 text-center text-[14px] text-[#9ca3af]">
+                  <div className="px-4 py-6 text-center text-lg font-bold text-landing-fg/60">
                     Không tìm thấy kết quả
                   </div>
                 ) : (
@@ -112,15 +112,15 @@ export function QuestionCard({
                           setDropdownOpen(false);
                           setSearchTerm('');
                         }}
-                        className={`w-full text-left px-4 py-3 rounded-xl text-[14px] font-medium transition-all duration-150 flex items-center justify-between ${
+                        className={`w-full text-left px-4 py-3 radius-wobbly text-lg font-bold transition-all duration-150 flex items-center justify-between border-2 ${
                           isSelected
-                            ? 'bg-[#f0fdf4] text-[#1a3628]'
-                            : 'text-[#4b5563] hover:bg-[#f9fafb]'
+                            ? 'bg-landing-yellow text-landing-fg border-landing-border shadow-[2px_2px_0_0_#2d2d2d] translate-y-[-1px]'
+                            : 'bg-white text-landing-fg border-transparent hover:border-landing-border hover:bg-landing-yellow/30'
                         }`}
                       >
                         <span>{option}</span>
                         {isSelected && (
-                          <Check className="w-4 h-4 text-[#4ade80]" />
+                          <Check className="w-5 h-5 text-landing-accent stroke-[3]" />
                         )}
                       </button>
                     );
@@ -137,35 +137,31 @@ export function QuestionCard({
   const renderStandardOptions = () => {
     if (!question.options) return null;
     return (
-      <div className="space-y-3.5">
+      <div className="space-y-4">
         {question.options.map((option) => {
           const isSelected = selectedValue === option;
           return (
             <button
               key={option}
               onClick={() => onSelect(option)}
-              className={`w-full text-left px-5 py-4 rounded-[18px] border-[1.5px] transition-all duration-200 flex items-center justify-between ${
+              className={`w-full text-left px-5 py-4 radius-wobbly border-[3px] transition-all duration-200 flex items-center justify-between shadow-hard-sm ${
                 isSelected
-                  ? 'border-[#4ade80] bg-white'
-                  : 'border-[#f0f0f0] hover:border-[#4ade80]'
+                  ? 'border-landing-fg bg-landing-yellow translate-y-[2px] translate-x-[2px] shadow-none'
+                  : 'border-landing-border bg-white hover:bg-landing-yellow/20 hover:translate-y-[-2px]'
               }`}
             >
-              <span className={`text-[15px] font-medium ${isSelected ? 'text-[#1a3628]' : 'text-[#333]'}`}>
+              <span className={`text-xl font-bold ${isSelected ? 'text-landing-fg' : 'text-landing-fg/80'}`}>
                 {option}
               </span>
               <div
-                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                className={`w-6 h-6 radius-wobbly border-[3px] flex items-center justify-center transition-colors ${
                   isSelected
-                    ? 'border-[#4ade80] bg-white'
-                    : 'border-[#e0e0e0]'
+                    ? 'border-landing-fg bg-landing-accent'
+                    : 'border-landing-border bg-white'
                 }`}
               >
                 {isSelected && (
-                  <motion.div 
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="w-2.5 h-2.5 rounded-full bg-[#4ade80]" 
-                  />
+                  <Check className="w-4 h-4 text-white stroke-[4]" />
                 )}
               </div>
             </button>
@@ -198,33 +194,31 @@ export function QuestionCard({
     };
 
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[45vh] overflow-y-auto pr-2 custom-scrollbar">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
         {question.options.map((option) => {
           const isSelected = currentSelections.includes(option);
           return (
             <button
               key={option}
               onClick={() => toggleSelection(option)}
-              className={`text-left px-4 py-3.5 rounded-[14px] border transition-all duration-200 flex items-center gap-3 ${
+              className={`text-left px-5 py-4 radius-wobbly border-[3px] transition-all duration-200 flex items-center gap-4 shadow-hard-sm ${
                 isSelected
-                  ? 'border-[#4ade80] bg-[#f0fdf4]'
-                  : 'border-[#e5e7eb] hover:border-[#4ade80]'
+                  ? 'border-landing-fg bg-landing-yellow translate-y-[2px] translate-x-[2px] shadow-none'
+                  : 'border-landing-border bg-white hover:bg-landing-yellow/20 hover:translate-y-[-2px]'
               }`}
             >
               <div
-                className={`w-5 h-5 flex-shrink-0 rounded-[6px] border-[1.5px] flex items-center justify-center transition-colors ${
+                className={`w-6 h-6 flex-shrink-0 radius-wobbly border-[3px] flex items-center justify-center transition-colors ${
                   isSelected
-                    ? 'border-[#4ade80] bg-[#4ade80]'
-                    : 'border-[#d1d5db] bg-white'
+                    ? 'border-landing-fg bg-landing-accent'
+                    : 'border-landing-border bg-white'
                 }`}
               >
                 {isSelected && (
-                  <svg className="w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                  </svg>
+                  <Check className="w-4 h-4 text-white stroke-[4]" />
                 )}
               </div>
-              <span className={`text-[14px] font-medium leading-snug ${isSelected ? 'text-[#1a3628]' : 'text-[#4b5563]'}`}>
+              <span className={`text-lg font-bold leading-snug ${isSelected ? 'text-landing-fg' : 'text-landing-fg/80'}`}>
                 {option}
               </span>
             </button>
@@ -235,14 +229,17 @@ export function QuestionCard({
   };
 
   return (
-    <div className="bg-white rounded-[32px] shadow-[0_8px_40px_rgb(0,0,0,0.06)] p-8 md:p-10 w-full max-w-[560px] relative">
-      <div className="mb-6">
-        <span className="inline-flex items-center justify-center bg-[#e8f5ed] text-[#4ade80] font-bold text-[11px] tracking-wide px-3 py-1.5 rounded-full uppercase">
+    <div className="bg-white radius-wobbly border-[3px] border-landing-border shadow-hard p-8 md:p-10 w-full max-w-[600px] relative">
+      {/* Tape decoration */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-8 bg-gray-400/30 backdrop-blur-sm -rotate-2 skew-x-12 mix-blend-multiply z-10" />
+
+      <div className="mb-8">
+        <span className="inline-block bg-landing-yellow text-landing-fg border-2 border-landing-border font-bold font-kalam text-lg px-4 py-1.5 radius-wobbly shadow-[2px_2px_0_0_#2d2d2d] -rotate-2">
           Bước {currentStep}/{totalSteps}
         </span>
       </div>
 
-      <h2 className="text-xl md:text-[22px] font-bold text-[#1a3628] mb-8 leading-snug">
+      <h2 className="text-3xl md:text-4xl font-bold font-kalam text-landing-fg mb-10 leading-snug">
         {question.title}
       </h2>
 
@@ -252,21 +249,20 @@ export function QuestionCard({
           ? renderCheckboxOptions()
           : renderStandardOptions()}
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-10 flex justify-end">
         <button
           onClick={onContinue}
           disabled={!selectedValue}
-          className={`px-6 py-3 rounded-xl font-bold text-white transition-all duration-200 flex items-center gap-2 ${
+          className={`px-8 h-14 radius-wobbly font-bold text-xl border-[3px] transition-all flex items-center gap-2 ${
             selectedValue
-              ? 'bg-[#4ade80] hover:bg-[#22c55e] active:scale-95 shadow-sm'
-              : 'bg-[#a7f3d0] cursor-not-allowed'
+              ? 'bg-landing-fg hover:bg-landing-accent text-white border-landing-border shadow-hard active:translate-y-[2px] active:translate-x-[2px] active:shadow-none hover:-rotate-1'
+              : 'bg-landing-muted border-landing-border/50 text-landing-fg/50 cursor-not-allowed shadow-none'
           }`}
         >
           Tiếp tục
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-6 h-6 stroke-[3]" />
         </button>
       </div>
     </div>
   );
 }
-

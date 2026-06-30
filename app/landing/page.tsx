@@ -196,7 +196,7 @@ export default function LandingPage() {
               Resources
               {/* Wavy underline */}
               <svg className="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
-                <path d="M0,3 Q10,0 20,3 T40,3 T60,3 T80,3 T100,3" stroke="#ff4d4d" strokeWidth="2" fill="none" />
+                <path d="M0,3 Q10,0 20,3 T40,3 T60,3 T80,3 T100,3" stroke="#16a34a" strokeWidth="2" fill="none" />
               </svg>
             </h4>
             <ul className="space-y-2 mt-4">
@@ -210,7 +210,7 @@ export default function LandingPage() {
             <h4 className="font-kalam font-bold text-xl relative inline-block">
               Connect
               <svg className="absolute -bottom-2 left-0 w-full" height="6" viewBox="0 0 100 6" preserveAspectRatio="none">
-                <path d="M0,3 Q10,6 20,3 T40,3 T60,3 T80,3 T100,3" stroke="#2d5da1" strokeWidth="2" fill="none" />
+                <path d="M0,3 Q10,6 20,3 T40,3 T60,3 T80,3 T100,3" stroke="#0d9488" strokeWidth="2" fill="none" />
               </svg>
             </h4>
             <div className="flex gap-4 mt-4">

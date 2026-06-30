@@ -7,10 +7,10 @@
   --color-landing-bg: #fdfbf7;
   --color-landing-fg: #2d2d2d;
   --color-landing-muted: #e5e0d8;
-  --color-landing-accent: #ff4d4d;
+  --color-landing-accent: #16a34a; /* Green marker */
   --color-landing-border: #2d2d2d;
-  --color-landing-secondary: #2d5da1;
-  --color-landing-yellow: #fff9c4;
+  --color-landing-secondary: #0d9488; /* Teal secondary */
+  --color-landing-yellow: #dcfce7; /* Light green sticky note instead of yellow */
 
   --shadow-hard: 4px 4px 0px 0px #2d2d2d;
   --shadow-hard-lg: 8px 8px 0px 0px #2d2d2d;
